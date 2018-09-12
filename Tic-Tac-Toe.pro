@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -26,11 +27,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
         MainWindow.cpp \
     BoardWidget.cpp \
-    Game.cpp
+    Game.cpp \
+    MyTCPClient.cpp \
+    MyTCPServer.cpp
+
 
 HEADERS  += MainWindow.h \
     BoardWidget.h \
-    Game.h
+    Game.h \
+    MyTCPClient.h \
+    MyTCPServer.h \
+    config.h
+
 
 FORMS    += MainWindow.ui \
     BoardWidget.ui

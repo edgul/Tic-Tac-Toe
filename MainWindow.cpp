@@ -17,11 +17,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_button_restart_clicked()
-{
-    game.start();
-}
-
 void MainWindow::on_button_start_clicked()
 {
     game.start();
@@ -30,4 +25,19 @@ void MainWindow::on_button_start_clicked()
 void MainWindow::update_msg_label(QString msg)
 {
     ui->label_msg->setText(msg);
+}
+
+void MainWindow::on_button_connect_clicked()
+{
+    tcp_client.connect_to_server();
+}
+
+void MainWindow::on_button_send_data_clicked()
+{
+    tcp_client.send(QString("Hello\n"));
+}
+
+void MainWindow::on_button_close_connection_clicked()
+{
+    tcp_client.close();
 }
