@@ -13,38 +13,16 @@ BoardWidget::BoardWidget(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    for (int i = 0; i < 9; i++)
-    {
-        board.append("");
-    }
-
-    // define win sets
-    QList<Quad> h_top = QList<Quad>() << QUAD_TOP_LEFT << QUAD_TOP_MID << QUAD_TOP_RIGHT;
-    QList<Quad> h_mid = QList<Quad>() << QUAD_MID_LEFT << QUAD_MID_MID << QUAD_MID_RIGHT;
-    QList<Quad> h_bot = QList<Quad>() << QUAD_BOT_LEFT << QUAD_BOT_MID << QUAD_BOT_RIGHT;
-
-    QList<Quad> v_left = QList<Quad>() << QUAD_TOP_LEFT  << QUAD_MID_LEFT << QUAD_BOT_LEFT;
-    QList<Quad> v_mid  = QList<Quad>() << QUAD_TOP_MID   << QUAD_MID_MID << QUAD_BOT_MID;
-    QList<Quad> v_right =QList<Quad>() << QUAD_TOP_RIGHT << QUAD_MID_RIGHT << QUAD_BOT_RIGHT;
-
-    QList<Quad> d_r    = QList<Quad>() << QUAD_BOT_LEFT << QUAD_MID_MID << QUAD_TOP_RIGHT;
-    QList<Quad> d_l    = QList<Quad>() << QUAD_BOT_RIGHT << QUAD_MID_MID << QUAD_TOP_LEFT;
-
-    wins.append(h_top);
-    wins.append(h_mid);
-    wins.append(h_bot);
-
-    wins.append(v_left);
-    wins.append(v_mid);
-    wins.append(v_right);
-
-    wins.append(d_r);
-    wins.append(d_l);
 }
 
 BoardWidget::~BoardWidget()
 {
     delete ui;
+}
+
+void BoardWidget::set_board(QList<QString> * new_board)
+{
+    board = new_board;
 }
 
 Quad BoardWidget::quadrant(QPoint p)
@@ -131,164 +109,6 @@ QPoint BoardWidget::point_at_quad(Quad quad)
     return p;
 }
 
-void BoardWidget::clear()
-{
-    for (int i = 0; i < 9; i++)
-    {
-        board[i] = "";
-    }
-
-    repaint();
-}
-
-void BoardWidget::place_x(Quad q)
-{
-    int q_int = (int) q;
-    board[q_int] = PLAYER_X;
-}
-
-void BoardWidget::place_o(Quad q)
-{
-    int q_int = (int) q;
-    board[q_int] = PLAYER_O;
-}
-
-bool BoardWidget::full()
-{
-    bool full = true;
-
-    foreach (QString s, board)
-    {
-        if (s == "")
-        {
-            full = false;
-            break;
-        }
-    }
-
-    return full;
-}
-
-bool BoardWidget::win_exists()
-{
-    bool a_win = false;
-
-    foreach (QList<Quad> win, wins)
-    {
-        bool these_quads = true;
-
-        // check x win
-        foreach(Quad quad, win)
-        {
-            if (!quads_with_x().contains(quad))
-            {
-                these_quads = false;
-            }
-        }
-
-        these_quads = true;
-
-        // check o win
-        foreach(Quad quad, win)
-        {
-            if (!quads_with_o().contains(quad))
-            {
-                these_quads = false;
-            }
-        }
-
-
-        if (these_quads)
-        {
-            a_win = true;
-            break;
-        }
-    }
-
-    return a_win;
-
-}
-
-QString BoardWidget::winner()
-{
-    QString winner = "";
-
-    foreach (QList<Quad> win, wins)
-    {
-        bool these_quads_win = true;
-
-        foreach(Quad quad, win)
-        {
-            if (!quads_with_x().contains(quad))
-            {
-                these_quads_win = false;
-            }
-        }
-
-        if (these_quads_win)
-        {
-            winner = PLAYER_X;
-            break;
-        }
-
-        these_quads_win = true;
-
-        foreach(Quad quad, win)
-        {
-            if (!quads_with_o().contains(quad))
-            {
-                these_quads_win = false;
-            }
-        }
-
-        if (these_quads_win)
-        {
-            winner = PLAYER_O;
-            break;
-        }
-    }
-
-    return winner;
-}
-
-bool BoardWidget::quad_empty(Quad quad)
-{
-    bool empty = false;
-    if (board[quad] == "") empty = true;
-
-    return empty;
-}
-
-QList<Quad> BoardWidget::quads_with_x()
-{
-    QList<Quad> quads;
-
-    for (int i = 0; i < board.length(); i++)
-    {
-        if (board[i] == PLAYER_X)
-        {
-            quads.append( (Quad) i);
-        }
-    }
-
-    return quads;
-}
-
-QList<Quad> BoardWidget::quads_with_o()
-{
-    QList<Quad> quads;
-
-    for (int i = 0; i < board.length(); i++)
-    {
-        if (board[i] == PLAYER_O)
-        {
-            quads.append( (Quad) i);
-        }
-    }
-
-    return quads;
-}
-
 bool BoardWidget::is_top(QPoint p)
 {
     return p.y() < (height()/3);
@@ -345,9 +165,9 @@ void BoardWidget::paintEvent(QPaintEvent *event)
     font.setPointSize(14);
     painter.setFont(font);
 
-    for (int quad = 0; quad < board.length(); quad++)
+    for (int quad = 0; quad < board->length() ; quad++)
     {
-        QString letter = board[quad];
+        QString letter = (*board)[quad];
         QPoint p = point_at_quad((Quad) quad);
         painter.drawText(p, letter);
     }

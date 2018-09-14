@@ -24,10 +24,9 @@ private slots:
 
     void update_msg_label(QString msg);
 
+    // client/server
     void on_button_connect_clicked();
-
     void on_button_send_data_clicked();
-
     void on_button_close_connection_clicked();
 
 private:

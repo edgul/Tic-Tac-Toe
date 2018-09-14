@@ -19,7 +19,15 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_button_start_clicked()
 {
-    game.start();
+
+    if (ui->radio_multi_player->isChecked())
+    {
+        game.start_multiplayer();
+    }
+    else
+    {
+        game.start_one_player();
+    }
 }
 
 void MainWindow::update_msg_label(QString msg)
