@@ -20,7 +20,7 @@ BoardWidget::~BoardWidget()
     delete ui;
 }
 
-void BoardWidget::set_board(QList<QString> * new_board)
+void BoardWidget::set_board(Board * new_board)
 {
     board = new_board;
 }
@@ -165,10 +165,10 @@ void BoardWidget::paintEvent(QPaintEvent *event)
     font.setPointSize(14);
     painter.setFont(font);
 
-    for (int quad = 0; quad < board->length() ; quad++)
+    for (int quad_index = 0; quad_index < board->size() ; quad_index++)
     {
-        QString letter = (*board)[quad];
-        QPoint p = point_at_quad((Quad) quad);
+        QString letter = board->piece_at(quad_index);
+        QPoint p = point_at_quad((Quad) quad_index);
         painter.drawText(p, letter);
     }
 

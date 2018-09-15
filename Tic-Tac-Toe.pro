@@ -30,7 +30,8 @@ SOURCES += main.cpp\
     Game.cpp \
     MyTCPClient.cpp \
     MyTCPServer.cpp \
-    AI.cpp
+    AI.cpp \
+    Board.cpp
 
 
 HEADERS  += MainWindow.h \
@@ -40,7 +41,8 @@ HEADERS  += MainWindow.h \
     MyTCPServer.h \
     config.h \
     AI.h \
-    data.h
+    data.h \
+    Board.h
 
 
 FORMS    += MainWindow.ui \

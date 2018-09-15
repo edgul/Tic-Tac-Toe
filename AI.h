@@ -4,13 +4,15 @@
 #include <QList>
 #include <QString>
 #include "data.h"
+#include "Board.h"
 
 class AI
 {
 public:
     AI();
 
-    Quad get_move(QList<QString> board);
+    Quad get_move(Board board);
+
 };
 
 #endif // AI_H

@@ -3,6 +3,7 @@
 
 #include "BoardWidget.h"
 #include "AI.h"
+#include "Board.h"
 
 class Game : public QObject
 {
@@ -23,6 +24,10 @@ private slots:
     void board_clicked(Quad quad);
 
 private:
+
+    AI ai;
+    Board board;
+
     BoardWidget * board_widget;
 
     bool turn_x;
@@ -32,28 +37,12 @@ private:
 
     void init();
 
-    void clear();
-    bool full();
-
     void turn_cleanup();
     void ai_goes();
 
     QString get_turn_piece();
 
-    AI ai;
 
-    QList<QString> board;
-
-    // used for win detection
-    QList<QList<Quad>> wins;
-
-    void place(QString xo, Quad quad);
-    bool quad_empty(Quad quad);
-
-    QString winner();
-    QList<Quad> quads_with_piece(QString piece);
-
-    void define_winning_sets();
 };
 
 #endif // GAME_H

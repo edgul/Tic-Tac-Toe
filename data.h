@@ -1,6 +1,9 @@
 #ifndef DATA_H
 #define DATA_H
 
+#define PLAYER_X "X"
+#define PLAYER_O "O"
+
 enum Quad
 {
     QUAD_TOP_LEFT = 0,

@@ -6,10 +6,8 @@
 #include <QPaintEvent>
 #include <QPoint>
 
-#define PLAYER_X "X"
-#define PLAYER_O "O"
-
 #include "data.h"
+#include "Board.h"
 
 namespace Ui {
 class BoardWidget;
@@ -23,7 +21,7 @@ public:
     explicit BoardWidget(QWidget *parent = 0);
     ~BoardWidget();
 
-    void set_board(QList<QString> * new_board);
+    void set_board(Board *new_board);
 
 signals:
     void board_clicked(Quad quad);
@@ -42,7 +40,7 @@ private:
     void mousePressEvent(QMouseEvent * event);
     void paintEvent(QPaintEvent * event);
 
-    QList<QString> * board;
+    Board * board;
 
 };
 
