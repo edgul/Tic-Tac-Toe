@@ -112,7 +112,12 @@ void Game::turn_cleanup()
         game_over = true;
     }
 
-    if ( !game_over )
+    if (game_over)
+    {
+        // stop taking user input when the game is over
+        active = false;
+    }
+    else
     {
         turn_x = !turn_x;
 

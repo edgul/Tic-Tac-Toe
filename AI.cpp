@@ -5,7 +5,7 @@ AI::AI()
 
 }
 
-// Assumes AI never asked to make a move when no moves left to make
+// Assumes there is at least one move to make
 Quad AI::get_move(QList<QString> board)
 {
     Quad move;
