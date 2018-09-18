@@ -19,17 +19,21 @@ public:
 
     QString winner();
 
+    int pieces();
     int size();
     QString piece_at(int index);
 
-private:
-    QList<QString> board;
+    int productivity(Quad move, QString piece_type); // number of possible wins from this quad placement
 
     QList<Quad> quads_with_piece(QString piece);
 
     QList<QList<Quad>> wins;
-    void define_winning_sets();
 
+    Quad available_win(QString piece_type);
+private:
+    QList<QString> board;
+
+    void define_winning_sets();
 
 };
 

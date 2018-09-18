@@ -14,7 +14,8 @@ enum Quad
     QUAD_MID_RIGHT ,
     QUAD_BOT_LEFT  ,
     QUAD_BOT_MID   ,
-    QUAD_BOT_RIGHT
+    QUAD_BOT_RIGHT,
+    QUAD_NONE
 };
 
 #endif // DATA_H

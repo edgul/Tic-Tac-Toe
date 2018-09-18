@@ -50,6 +50,8 @@ void Game::start_one_player()
 {
     init();
 
+    ai.set_piece_type(PLAYER_O);
+
     one_player = true;
 
 }
@@ -130,10 +132,10 @@ void Game::board_clicked(Quad quad)
 
 void Game::ai_goes()
 {
-    // ai actually goes
-    Quad best_move = ai.get_move(board);
-    QString piece = get_turn_piece();
-    board.place(piece, best_move);
+    QString ai_piece = ai.get_piece();
+    Quad ai_move = ai.get_move(board);
+
+    board.place(ai_piece, ai_move);
 
     turn_cleanup();
 }

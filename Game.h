@@ -42,7 +42,6 @@ private:
 
     QString get_turn_piece();
 
-
 };
 
 #endif // GAME_H
