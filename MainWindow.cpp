@@ -26,7 +26,11 @@ void MainWindow::on_button_start_clicked()
     }
     else
     {
-        game.start_one_player();
+        Difficulty difficulty = DIFFICULTY_EASY;
+        if (ui->radio_difficulty_medium->isChecked()) difficulty = DIFFICULTY_MEDIUM;
+        if (ui->radio_difficulty_hard->isChecked()) difficulty = DIFFICULTY_HARD;
+
+        game.start_one_player(difficulty);
     }
 }
 
@@ -48,4 +52,14 @@ void MainWindow::on_button_send_data_clicked()
 void MainWindow::on_button_close_connection_clicked()
 {
     tcp_client.close();
+}
+
+void MainWindow::on_radio_one_player_clicked()
+{
+    ui->frame_difficulty->setEnabled(true);
+}
+
+void MainWindow::on_radio_multi_player_clicked()
+{
+    ui->frame_difficulty->setEnabled(false);
 }

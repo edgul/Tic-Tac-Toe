@@ -6,6 +6,13 @@
 #include "data.h"
 #include "Board.h"
 
+enum Difficulty
+{
+    DIFFICULTY_EASY,
+    DIFFICULTY_MEDIUM,
+    DIFFICULTY_HARD
+};
+
 class AI
 {
 public:
@@ -20,8 +27,14 @@ public:
     void set_piece_type(QString piece);
     QString get_piece();
 
+    void set_difficulty(Difficulty new_diff);
+
+    Quad get_best_move(Board board);
+
 private:
     QString piece_type;
+
+    Difficulty difficulty;
 
 };
 

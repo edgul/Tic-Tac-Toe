@@ -8,3 +8,4 @@ Improvements:
 * improve graphics
 * add difficulties
 * add perfect AI
+* Add unit tests

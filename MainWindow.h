@@ -29,6 +29,9 @@ private slots:
     void on_button_send_data_clicked();
     void on_button_close_connection_clicked();
 
+    void on_radio_one_player_clicked();
+    void on_radio_multi_player_clicked();
+
 private:
     Ui::MainWindow *ui;
 

@@ -15,7 +15,7 @@ public:
     void set_board(BoardWidget * board_w);
 
     void start_multiplayer();
-    void start_one_player();
+    void start_one_player(Difficulty difficulty);
 
 signals:
     void update_msg_label(QString msg);

@@ -2,12 +2,11 @@
 
 AI::AI()
 {
-
+    difficulty = DIFFICULTY_MEDIUM;
 }
 
-Quad AI::get_move(Board board)
+Quad AI::get_best_move(Board board)
 {
-    // ai actually goes
     Quad best_move = board.available_win(piece_type);
 
     if (best_move == QUAD_NONE)
@@ -24,6 +23,21 @@ Quad AI::get_move(Board board)
     }
 
     return best_move;
+}
+
+Quad AI::get_move(Board board)
+{
+    Quad move;
+    if (difficulty == DIFFICULTY_EASY)
+    {
+        move = get_dumbass_move(board);
+    }
+    else
+    {
+        move = get_best_move(board);
+    }
+
+    return move;
 }
 
 // Assumes there is at least one move to make
@@ -72,4 +86,9 @@ void AI::set_piece_type(QString piece)
 QString AI::get_piece()
 {
     return piece_type;
+}
+
+void AI::set_difficulty(Difficulty new_diff)
+{
+    difficulty = new_diff;
 }

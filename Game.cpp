@@ -46,11 +46,12 @@ void Game::start_multiplayer()
 
 }
 
-void Game::start_one_player()
+void Game::start_one_player(Difficulty difficulty)
 {
     init();
 
     ai.set_piece_type(PLAYER_O);
+    ai.set_difficulty(difficulty);
 
     one_player = true;
 
