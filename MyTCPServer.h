@@ -20,7 +20,9 @@ private slots:
 
 private:
 
-    QTcpSocket * socket;
+    QList<QTcpSocket *> sockets;
+    QList<QString> socket_buffers;
+
     QTimer flush_timer;
 };
 

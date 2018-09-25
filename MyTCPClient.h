@@ -7,7 +7,7 @@
 
 enum TcpState
 {
-    UNCONNECTED,
+    DISCONNECTED,
     CONNECTING,
     CONNECTED
 };
@@ -23,6 +23,9 @@ public:
     void connect_to_server();
     void send(QString str);
     void close();
+
+signals:
+    void report(QString);
 
 private slots:
     void connected();

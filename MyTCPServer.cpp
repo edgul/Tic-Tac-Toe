@@ -3,9 +3,10 @@
 #include <iostream>
 #include "config.h"
 
+#define MAX_SOCKETS (4)
+
 MyTCPServer::MyTCPServer()
 {
-    socket = 0;
 
     QHostAddress host_address(HOST_ADDRESS);
     if (!listen(host_address, HOST_PORT))
@@ -26,16 +27,24 @@ MyTCPServer::MyTCPServer()
 
 void MyTCPServer::new_connection()
 {
-    if (socket)
+    if (sockets.length() >= MAX_SOCKETS)
     {
-        std::cout << "Cannot form new connection. Socket busy";
+        std::cout << "Cannot form new connection. Server busy";
+
+        QTcpSocket * new_socket = nextPendingConnection();
+        new_socket->write(SERVER_BUSY);
+        new_socket->close();
 
         return;
     }
 
-    socket = nextPendingConnection();
-    connect(socket, SIGNAL(readyRead()), SLOT(receive_data()));
-    connect(socket, SIGNAL(aboutToClose()), SLOT(close_connection()));
+    QTcpSocket * new_socket = nextPendingConnection();
+    connect(new_socket, SIGNAL(readyRead()), SLOT(receive_data()));
+    connect(new_socket, SIGNAL(aboutToClose()), SLOT(close_connection()));
+
+    new_socket->write(SERVER_OK);
+
+    sockets.append(new_socket);
 
     std::cout << "Connection formed\n";
 
@@ -43,7 +52,7 @@ void MyTCPServer::new_connection()
 
 void MyTCPServer::receive_data()
 {
-
+    QTcpSocket * socket = (QTcpSocket *) sender();
     QByteArray data = socket->readAll();
 
     QByteArray terminate_string = "Close";
@@ -59,12 +68,26 @@ void MyTCPServer::receive_data()
 
 void MyTCPServer::close_connection()
 {
+    QTcpSocket * sending_socket = (QTcpSocket *) sender();
+
     // print remaining data
-    QByteArray data = socket->readAll();
+    QByteArray data = sending_socket->readAll();
     std::cout << data.data();
 
-    std::cout << "Connection closed\n";
-    socket = 0;
+    for (int i = 0; i < sockets.length(); i++)
+    {
+        QTcpSocket * socket = sockets[i];
+
+        if (socket == sending_socket)
+        {
+            socket_buffers.removeAt(i);
+            sockets.removeAt(i);
+
+            sending_socket->deleteLater();
+
+            std::cout << "Connection closed\n";
+        }
+    }
 }
 
 void MyTCPServer::flush_output()

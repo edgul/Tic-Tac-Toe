@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     MyTCPClient.cpp \
     MyTCPServer.cpp \
     AI.cpp \
-    Board.cpp
+    Board.cpp \
+    MainWindowManager.cpp
 
 
 HEADERS  += MainWindow.h \
@@ -42,11 +43,13 @@ HEADERS  += MainWindow.h \
     config.h \
     AI.h \
     data.h \
-    Board.h
+    Board.h \
+    MainWindowManager.h
 
 
 FORMS    += MainWindow.ui \
-    BoardWidget.ui
+    BoardWidget.ui \
+    MainWindowManager.ui
 
 DISTFILES += \
     README.txt

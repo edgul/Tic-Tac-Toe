@@ -23,6 +23,7 @@ private slots:
     void on_button_start_clicked();
 
     void update_msg_label(QString msg);
+    void update_output(QString msg);
 
     // client/server
     void on_button_connect_clicked();

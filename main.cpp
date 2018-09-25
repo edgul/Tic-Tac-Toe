@@ -2,6 +2,7 @@
 #include <QApplication>
 
 #include "MyTCPServer.h"
+#include "MainWindowManager.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,6 +12,12 @@ int main(int argc, char *argv[])
 
     MainWindow w;
     w.show();
+
+    MainWindow w2;
+    w2.show();
+
+    MainWindowManager wm;
+    wm.show();
 
     return a.exec();
 }

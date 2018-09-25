@@ -5,7 +5,7 @@
 
 MyTCPClient::MyTCPClient()
 {
-    state = UNCONNECTED;
+    state = DISCONNECTED;
     connect(&socket, SIGNAL(connected()), SLOT(connected()));
     connect(&socket, SIGNAL(readyRead()), SLOT(received_data()));
     connect(&socket, SIGNAL(aboutToClose()), SLOT(closing()));
@@ -17,7 +17,7 @@ MyTCPClient::MyTCPClient()
 
 void MyTCPClient::connect_to_server()
 {
-    if (state == UNCONNECTED)
+    if (state == DISCONNECTED)
     {
         socket.connectToHost(HOST_ADDRESS, HOST_PORT);
 
@@ -29,7 +29,7 @@ void MyTCPClient::send(QString str)
 {
     if (state != CONNECTED)
     {
-        std::cout << "Failed to send. Not connected\n";
+        emit report("ERR: Cannot send; Not connected\n");
         return;
     }
 
@@ -41,9 +41,9 @@ void MyTCPClient::send(QString str)
 void MyTCPClient::close()
 {
 
-    if (state == UNCONNECTED)
+    if (state == DISCONNECTED)
     {
-        std::cout << "Cannot close connection. No connection.\n";
+        emit report("ERR: No connection to close.\n");
         return;
     }
 
@@ -55,24 +55,42 @@ void MyTCPClient::close()
 
 void MyTCPClient::connected()
 {
-    
-    state = CONNECTED;
+    QByteArray bytes = socket.readAll();
 
-    std::cout << "Connected to server.\n";
+    QString msg;
+
+    state = CONNECTED;
+    msg = "Connected to server.\n";
+
+    emit report(msg);
 }
 
 void MyTCPClient::received_data()
 {
-    QByteArray bytes = socket.readAll();
+    if (state == CONNECTED)
+    {
+        QByteArray bytes = socket.readAll();
 
-    std::cout << bytes.data();
+        if (bytes.contains(SERVER_BUSY))
+        {
+            emit report("ERR: Server Busy.");
+            socket.close();
+        }
+        else
+        {
+            emit report(QString(bytes));
+        }
+    }
 }
 
 void MyTCPClient::closing()
 {
-    state = UNCONNECTED;
+    if (state != DISCONNECTED)
+    {
+        state = DISCONNECTED;
 
-    std::cout << "Closing connection.\n";
+        emit report("Connection Closed.\n");
+    }
 }
 
 void MyTCPClient::flush_output()

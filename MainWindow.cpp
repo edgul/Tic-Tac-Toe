@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent) :
     game.set_board(ui->board_widget);
 
     connect(&game, SIGNAL(update_msg_label(QString)), this, SLOT(update_msg_label(QString)));
+
+    connect(&tcp_client, SIGNAL(report(QString)), this, SLOT(update_output(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -37,6 +39,11 @@ void MainWindow::on_button_start_clicked()
 void MainWindow::update_msg_label(QString msg)
 {
     ui->label_msg->setText(msg);
+}
+
+void MainWindow::update_output(QString msg)
+{
+    ui->output->appendPlainText(msg);
 }
 
 void MainWindow::on_button_connect_clicked()
