@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include "Game.h"
-#include "MyTCPClient.h"
+#include "Player.h"
 
 namespace Ui {
 class MainWindow;
@@ -17,7 +17,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-    MyTCPClient tcp_client;
+    void set_player(bool x);
 
 private slots:
     void on_button_start_clicked();
@@ -27,7 +27,6 @@ private slots:
 
     // client/server
     void on_button_connect_clicked();
-    void on_button_send_data_clicked();
     void on_button_close_connection_clicked();
 
     void on_radio_one_player_clicked();
@@ -36,7 +35,11 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
+    bool player_x;
+
     Game game;
+
+    Player player;
 };
 
 #endif // MAINWINDOW_H

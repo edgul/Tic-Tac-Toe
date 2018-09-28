@@ -16,7 +16,7 @@ Game::Game()
 
 }
 
-void Game::set_board(BoardWidget * board_w)
+void Game::init_board(BoardWidget * board_w)
 {
     board_widget = board_w;
     connect(board_widget, SIGNAL(board_clicked(Quad)), this, SLOT(board_clicked(Quad)));

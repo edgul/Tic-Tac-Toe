@@ -32,7 +32,9 @@ SOURCES += main.cpp\
     MyTCPServer.cpp \
     AI.cpp \
     Board.cpp \
-    MainWindowManager.cpp
+    MainWindowManager.cpp \
+    Player.cpp \
+    Protocol.cpp
 
 
 HEADERS  += MainWindow.h \
@@ -44,7 +46,9 @@ HEADERS  += MainWindow.h \
     AI.h \
     data.h \
     Board.h \
-    MainWindowManager.h
+    MainWindowManager.h \
+    Player.h \
+    Protocol.h
 
 
 FORMS    += MainWindow.ui \

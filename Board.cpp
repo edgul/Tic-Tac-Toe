@@ -1,5 +1,6 @@
 #include "Board.h"
 
+
 Board::Board()
 {
     define_winning_sets();
@@ -7,7 +8,7 @@ Board::Board()
     // init empty board
     for (int i = 0; i < 9; i++)
     {
-        board.append("");
+        board.append(EMPTY_CELL);
     }
 }
 
@@ -15,7 +16,7 @@ void Board::clear()
 {
     for (int i = 0; i < 9; i++)
     {
-        board[i] = "";
+        board[i] = EMPTY_CELL;
     }
 }
 
@@ -25,7 +26,7 @@ bool Board::full()
 
     foreach (QString s, board)
     {
-        if (s == "")
+        if (s == EMPTY_CELL)
         {
             full = false;
             break;
@@ -46,7 +47,7 @@ bool Board::quad_empty(Quad quad)
 {
     bool empty = false;
 
-    if (board[quad] == "") empty = true;
+    if (board[quad] == EMPTY_CELL) empty = true;
 
     return empty;
 }
@@ -99,7 +100,7 @@ int Board::pieces()
 
     for (int i = 0; i < board.length(); i++)
     {
-        if (board[i] != "")
+        if (board[i] != EMPTY_CELL)
         {
             p++;
         }
@@ -169,7 +170,7 @@ Quad Board::available_win(QString piece_type)
 {
     Quad win_quad = QUAD_NONE;
 
-    QList<Quad> empty_quads = quads_with_piece("");
+    QList<Quad> empty_quads = quads_with_piece(EMPTY_CELL);
 
     foreach (Quad quad, empty_quads)
     {
@@ -196,6 +197,13 @@ Quad Board::available_win(QString piece_type)
     }
 
     return win_quad;
+}
+
+void Board::set_board_from_string(QString b_string)
+{
+    QList<QString> list = b_string.split("");
+
+    board = list;
 }
 
 void Board::define_winning_sets()

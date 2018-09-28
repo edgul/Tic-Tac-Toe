@@ -23,6 +23,8 @@ BoardWidget::~BoardWidget()
 void BoardWidget::set_board(Board * new_board)
 {
     board = new_board;
+
+    repaint();
 }
 
 Quad BoardWidget::quadrant(QPoint p)
@@ -168,6 +170,8 @@ void BoardWidget::paintEvent(QPaintEvent *event)
     for (int quad_index = 0; quad_index < board->size() ; quad_index++)
     {
         QString letter = board->piece_at(quad_index);
+        if (letter == EMPTY_CELL) letter = "";
+
         QPoint p = point_at_quad((Quad) quad_index);
         painter.drawText(p, letter);
     }

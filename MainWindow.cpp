@@ -7,11 +7,12 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    game.set_board(ui->board_widget);
+    game.init_board(ui->board_widget);
+    player.init_board(ui->board_widget);
 
     connect(&game, SIGNAL(update_msg_label(QString)), this, SLOT(update_msg_label(QString)));
 
-    connect(&tcp_client, SIGNAL(report(QString)), this, SLOT(update_output(QString)));
+    connect(&player, SIGNAL(report(QString)), this, SLOT(update_output(QString)));
 }
 
 MainWindow::~MainWindow()
@@ -19,12 +20,17 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::set_player(bool x)
+{
+    player.set_piece(x);
+}
+
 void MainWindow::on_button_start_clicked()
 {
 
     if (ui->radio_multi_player->isChecked())
     {
-        game.start_multiplayer();
+        // game.start_multiplayer();
     }
     else
     {
@@ -48,17 +54,12 @@ void MainWindow::update_output(QString msg)
 
 void MainWindow::on_button_connect_clicked()
 {
-    tcp_client.connect_to_server();
-}
-
-void MainWindow::on_button_send_data_clicked()
-{
-    tcp_client.send(QString("Hello\n"));
+    player.connect_to_server();
 }
 
 void MainWindow::on_button_close_connection_clicked()
 {
-    tcp_client.close();
+    player.close_connection();
 }
 
 void MainWindow::on_radio_one_player_clicked()

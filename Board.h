@@ -4,6 +4,8 @@
 #include <QList>
 #include "data.h"
 
+#define EMPTY_CELL "-"
+
 class Board
 {
 public:
@@ -30,6 +32,8 @@ public:
     QList<QList<Quad>> wins;
 
     Quad available_win(QString piece_type);
+
+    void set_board_from_string(QString b_string);
 private:
     QList<QString> board;
 

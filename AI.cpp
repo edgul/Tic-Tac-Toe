@@ -48,7 +48,7 @@ Quad AI::get_dumbass_move(Board board)
     // dumb AI -- first empty quad
     for (int i = 0; i < board.size(); i ++)
     {
-        if (board.piece_at(i) == "")
+        if (board.piece_at(i) == EMPTY_CELL)
         {
             move = (Quad) i;
             break;

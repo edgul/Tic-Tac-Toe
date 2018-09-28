@@ -12,7 +12,7 @@ class Game : public QObject
 public:
     Game();
 
-    void set_board(BoardWidget * board_w);
+    void init_board(BoardWidget * board_w);
 
     void start_multiplayer();
     void start_one_player(Difficulty difficulty);

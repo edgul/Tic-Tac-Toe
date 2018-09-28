@@ -11,9 +11,11 @@ int main(int argc, char *argv[])
     MyTCPServer tcp_server;
 
     MainWindow w;
+    w.set_player(true);
     w.show();
 
     MainWindow w2;
+    w.set_player(false);
     w2.show();
 
     MainWindowManager wm;

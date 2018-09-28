@@ -228,13 +228,6 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="button_send_data">
-         <property name="text">
-          <string>Send Data</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QPushButton" name="button_close_connection">
          <property name="text">
           <string>Close Connection</string>
