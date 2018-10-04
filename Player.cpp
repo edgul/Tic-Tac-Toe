@@ -1,11 +1,10 @@
 #include "Player.h"
 
-#include "Protocol.h"
 
 Player::Player()
 {
-    connect(&protocol, SIGNAL(report(QString)), this, SLOT(received_report(QString)));
-    connect(&protocol, SIGNAL(update_game_state(bool,Board)), this, SLOT(received_game_state(bool,Board)));
+    connect(&tcp_client, SIGNAL(report(QString)), this, SLOT(received_report(QString)));
+    connect(&tcp_client, SIGNAL(update_game_state(bool,Board)), this, SLOT(received_game_state(bool,Board)));
 }
 
 void Player::set_piece(bool x)
@@ -15,12 +14,12 @@ void Player::set_piece(bool x)
 
 void Player::connect_to_server()
 {
-    protocol.connect_to_server();
+    tcp_client.connect_to_server();
 }
 
 void Player::close_connection()
 {
-    protocol.close_connection();
+    tcp_client.close();
 }
 
 void Player::init_board(BoardWidget * board_w)
@@ -36,7 +35,7 @@ void Player::board_clicked(Quad quad)
 
     if (turn_x == piece_x) // this player's turn
     {
-        protocol.player_move(turn_x, quad);
+        tcp_client.player_move(turn_x, quad);
     }
 }
 

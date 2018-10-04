@@ -33,8 +33,7 @@ SOURCES += main.cpp\
     AI.cpp \
     Board.cpp \
     MainWindowManager.cpp \
-    Player.cpp \
-    Protocol.cpp
+    Player.cpp
 
 
 HEADERS  += MainWindow.h \
@@ -47,8 +46,7 @@ HEADERS  += MainWindow.h \
     data.h \
     Board.h \
     MainWindowManager.h \
-    Player.h \
-    Protocol.h
+    Player.h
 
 
 FORMS    += MainWindow.ui \

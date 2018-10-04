@@ -2,7 +2,7 @@
 #define PLAYER_H
 
 #include "BoardWidget.h"
-#include "Protocol.h"
+#include "MyTCPClient.h"
 
 class Player : public QObject
 {
@@ -29,7 +29,7 @@ private:
 
     Board board;
 
-    Protocol protocol;
+    MyTCPClient tcp_client;
 
     bool piece_x;
     bool turn_x;

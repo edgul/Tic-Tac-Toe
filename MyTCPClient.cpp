@@ -5,6 +5,9 @@
 
 MyTCPClient::MyTCPClient()
 {
+
+    left_overs = "";
+
     state = DISCONNECTED;
     connect(&socket, SIGNAL(connected()), SLOT(connected()));
     connect(&socket, SIGNAL(readyRead()), SLOT(received_data()));
@@ -13,6 +16,7 @@ MyTCPClient::MyTCPClient()
     connect(&flush_timer, SIGNAL(timeout()),SLOT(flush_output()));
     flush_timer.setInterval(1000);
     flush_timer.start();
+
 }
 
 void MyTCPClient::connect_to_server()
@@ -23,6 +27,12 @@ void MyTCPClient::connect_to_server()
 
         state = CONNECTING;
     }
+}
+
+void MyTCPClient::send_message(QString str)
+{
+    QString string_to_send = QString(DELIMITER) + str;
+    send(string_to_send);
 }
 
 void MyTCPClient::send(QString str)
@@ -47,7 +57,7 @@ void MyTCPClient::close()
         return;
     }
 
-    send(QString("Close"));
+    send_message("Close");
 
     socket.close();
 
@@ -69,17 +79,68 @@ void MyTCPClient::received_data()
 {
     if (state == CONNECTED)
     {
-        QByteArray bytes = socket.readAll();
+        QByteArray all_data = left_overs + socket.readAll();
 
-        if (bytes.contains(SERVER_BUSY))
+        int i = 0;
+        while (all_data.indexOf(DELIMITER, i) != -1)
         {
-            emit report("ERR: Server Busy.");
-            socket.close();
+            int i = all_data.indexOf(DELIMITER) + DELIMITER_LENGTH;
+
+            Function function = (Function) all_data.mid(i, FUNCTION_LENGTH).toInt();
+            i += FUNCTION_LENGTH;
+
+            if (function == FUNCTION_HANDSHAKE_RESPONSE)
+            {
+                int next_separator = all_data.indexOf(SEPARATOR, i);
+                QByteArray handshake_response = all_data.mid(i, next_separator - i);
+                Handshake response = (Handshake) handshake_response.toInt();
+
+                if (response == HANDSHAKE_OK)
+                {
+                    emit report("Connected to Server.");
+                }
+                else
+                {
+                    emit report("ERR: Server Busy.");
+                    socket.close();
+                }
+            }
+            else if (function == FUNCTION_UPDATE_BOARD)
+            {
+                QString turn_x = all_data.mid(i, PID_STATE_LENGTH);
+                bool player_turn_x = true;
+                if (turn_x == "F") player_turn_x = false;
+
+                i += PID_STATE_LENGTH;
+
+                QString board_string = all_data.mid(i, PID_STATE_BOARD_LENGTH);
+                i += PID_STATE_BOARD_LENGTH;
+
+                Board board;
+                board.set_board_from_string(board_string);
+
+                emit update_game_state(player_turn_x, board);
+            }
+            else if (function == FUNCTION_HELLO_WORLD) // o cutoff
+            {
+                int next_separator = all_data.indexOf(SEPARATOR, i);
+                QByteArray msg = all_data.mid(i, next_separator - i);
+                i = next_separator + 1;
+
+                next_separator = all_data.indexOf(SEPARATOR, i);
+                QByteArray msg2 = all_data.mid(i, next_separator - i);
+                i = next_separator + 1;
+
+                next_separator = all_data.indexOf(SEPARATOR, i);
+                QByteArray msg3 = all_data.mid(i, next_separator - i);
+                i = next_separator + 1;
+
+                emit report(msg + msg2 + msg3);
+            }
+
         }
-        else
-        {
-            emit report(QString(bytes));
-        }
+
+        left_overs = all_data.mid(i);
     }
 }
 
@@ -96,4 +157,13 @@ void MyTCPClient::closing()
 void MyTCPClient::flush_output()
 {
     std::flush(std::cout);
+}
+
+void MyTCPClient::player_move(bool player_x, Quad q)
+{
+     QString data = DELIMITER + QString(PID_MOVE) + QString(player_x) + QString(q);
+     send(data);
+
+     QString report_data = "Sending " + data;
+     emit report(report_data);
 }
