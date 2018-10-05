@@ -5,6 +5,9 @@
 #include <QTcpSocket>
 #include <QTimer>
 
+#include "data.h"
+
+
 class MyTCPServer : public QTcpServer
 {
     Q_OBJECT
@@ -22,7 +25,8 @@ private slots:
 
 private:
 
-    void send_handshake_response(QTcpSocket * socket, bool ok);
+    void send_hello_world(QTcpSocket * socket, QString string);
+    void send_handshake_response(QTcpSocket * socket, Handshake h);
     void send_delimited_message(QTcpSocket *socket, QByteArray bytes);
 
     QList<QTcpSocket *> sockets;

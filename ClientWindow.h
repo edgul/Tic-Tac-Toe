@@ -1,21 +1,21 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef CLIENTWINDOW_H
+#define CLIENTWINDOW_H
 
 #include <QMainWindow>
 #include "Game.h"
 #include "Player.h"
 
 namespace Ui {
-class MainWindow;
+class ClientWindow;
 }
 
-class MainWindow : public QMainWindow
+class ClientWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit ClientWindow(QWidget *parent = 0);
+    ~ClientWindow();
 
     void set_player(bool x);
 
@@ -33,7 +33,7 @@ private slots:
     void on_radio_multi_player_clicked();
 
 private:
-    Ui::MainWindow *ui;
+    Ui::ClientWindow *ui;
 
     bool player_x;
 
@@ -42,4 +42,4 @@ private:
     Player player;
 };
 
-#endif // MAINWINDOW_H
+#endif // CLIENTWINDOW_H

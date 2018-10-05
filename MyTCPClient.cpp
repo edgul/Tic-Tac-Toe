@@ -65,14 +65,11 @@ void MyTCPClient::close()
 
 void MyTCPClient::connected()
 {
-    QByteArray bytes = socket.readAll();
-
-    QString msg;
 
     state = CONNECTED;
-    msg = "Connected to server.\n";
 
-    emit report(msg);
+    received_data();
+
 }
 
 void MyTCPClient::received_data()
@@ -84,16 +81,18 @@ void MyTCPClient::received_data()
         int i = 0;
         while (all_data.indexOf(DELIMITER, i) != -1)
         {
-            int i = all_data.indexOf(DELIMITER) + DELIMITER_LENGTH;
+            i = all_data.indexOf(DELIMITER) + DELIMITER_LENGTH;
 
             Function function = (Function) all_data.mid(i, FUNCTION_LENGTH).toInt();
-            i += FUNCTION_LENGTH;
+            i += FUNCTION_LENGTH + 1;
 
             if (function == FUNCTION_HANDSHAKE_RESPONSE)
             {
                 int next_separator = all_data.indexOf(SEPARATOR, i);
                 QByteArray handshake_response = all_data.mid(i, next_separator - i);
                 Handshake response = (Handshake) handshake_response.toInt();
+
+                i = next_separator + 1;
 
                 if (response == HANDSHAKE_OK)
                 {

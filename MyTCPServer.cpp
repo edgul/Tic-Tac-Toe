@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include "config.h"
-#include "data.h"
 #include "Board.h"
 
 #define MAX_SOCKETS (4)
@@ -113,17 +112,27 @@ void MyTCPServer::send_loop()
         QTcpSocket * socket = sockets[i];
 
         QString i_str = QString::number(i);
-        send_delimited_message(socket, QByteArray("hello world ") + i_str.toLatin1());
+        send_hello_world(socket, "hello world " + i_str);
+
+        QString msg = "SERVER: Wrote to socket " + QString::number(i) + "\n";
+        std::cout << msg.toLatin1().data();
+
     }
 }
 
-void MyTCPServer::send_handshake_response(QTcpSocket * socket, bool ok)
+void MyTCPServer::send_hello_world(QTcpSocket *socket, QString string)
 {
-    Handshake handshake_response = HANDSHAKE_OK;
-    if (!ok) handshake_response = HANDSHAKE_BUSY;
+    QByteArray msg = QString::number(FUNCTION_HELLO_WORLD).toLatin1() + SEPARATOR +
+                     string.toLatin1();
+
+    send_delimited_message(socket, msg);
+}
+
+void MyTCPServer::send_handshake_response(QTcpSocket * socket, Handshake h)
+{
 
     QByteArray handshake = QString::number(FUNCTION_HANDSHAKE_RESPONSE).toLatin1() + SEPARATOR +
-                           QString::number(handshake_response).toLatin1();
+                           QString::number(h).toLatin1();
 
     send_delimited_message(socket, handshake);
 
@@ -133,7 +142,7 @@ void MyTCPServer::send_delimited_message(QTcpSocket * socket, QByteArray bytes)
 {
     if (socket == 0) return;
 
-    socket->write("TTT " + bytes);
+    socket->write("TTT " + bytes + " ");
 }
 
 void MyTCPServer::unpack_data(QByteArray data)

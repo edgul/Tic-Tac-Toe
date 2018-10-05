@@ -1,7 +1,7 @@
 #include "MainWindowManager.h"
 #include "ui_MainWindowManager.h"
 
-#include "MainWindow.h"
+#include "ClientWindow.h"
 
 MainWindowManager::MainWindowManager(QWidget *parent) :
     QWidget(parent),
@@ -18,6 +18,6 @@ MainWindowManager::~MainWindowManager()
 
 void MainWindowManager::on_button_new_main_window_clicked()
 {
-    MainWindow * mw = new MainWindow();
+    ClientWindow * mw = new ClientWindow();
     mw->show();
 }

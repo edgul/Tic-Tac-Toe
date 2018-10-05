@@ -1,9 +1,9 @@
-#include "MainWindow.h"
-#include "ui_MainWindow.h"
+#include "ClientWindow.h"
+#include "ui_ClientWindow.h"
 
-MainWindow::MainWindow(QWidget *parent) :
+ClientWindow::ClientWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::ClientWindow)
 {
     ui->setupUi(this);
 
@@ -15,17 +15,17 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(&player, SIGNAL(report(QString)), this, SLOT(update_output(QString)));
 }
 
-MainWindow::~MainWindow()
+ClientWindow::~ClientWindow()
 {
     delete ui;
 }
 
-void MainWindow::set_player(bool x)
+void ClientWindow::set_player(bool x)
 {
     player.set_piece(x);
 }
 
-void MainWindow::on_button_start_clicked()
+void ClientWindow::on_button_start_clicked()
 {
 
     if (ui->radio_multi_player->isChecked())
@@ -42,32 +42,32 @@ void MainWindow::on_button_start_clicked()
     }
 }
 
-void MainWindow::update_msg_label(QString msg)
+void ClientWindow::update_msg_label(QString msg)
 {
     ui->label_msg->setText(msg);
 }
 
-void MainWindow::update_output(QString msg)
+void ClientWindow::update_output(QString msg)
 {
     ui->output->appendPlainText(msg);
 }
 
-void MainWindow::on_button_connect_clicked()
+void ClientWindow::on_button_connect_clicked()
 {
     player.connect_to_server();
 }
 
-void MainWindow::on_button_close_connection_clicked()
+void ClientWindow::on_button_close_connection_clicked()
 {
     player.close_connection();
 }
 
-void MainWindow::on_radio_one_player_clicked()
+void ClientWindow::on_radio_one_player_clicked()
 {
     ui->frame_difficulty->setEnabled(true);
 }
 
-void MainWindow::on_radio_multi_player_clicked()
+void ClientWindow::on_radio_multi_player_clicked()
 {
     ui->frame_difficulty->setEnabled(false);
 }
