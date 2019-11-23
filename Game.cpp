@@ -11,31 +11,17 @@ Game::Game()
 {
     turn_x = true;
     active = false;
-
     one_player = true;
-
-}
-
-void Game::init_board(BoardWidget * board_w)
-{
-    board_widget = board_w;
-    connect(board_widget, SIGNAL(board_clicked(Quad)), this, SLOT(board_clicked(Quad)));
-
-    board_widget->set_board(&board);
 }
 
 void Game::init()
 {
     board.clear();
-    board_widget->repaint();
-
     turn_x = true;
 
     QString msg = MSG_TURN_X;
     emit update_msg_label(msg);
-
     active = true;
-
 }
 
 void Game::start_multiplayer()
@@ -54,7 +40,6 @@ void Game::start_one_player(Difficulty difficulty)
     ai.set_difficulty(difficulty);
 
     one_player = true;
-
 }
 
 void Game::turn_cleanup()

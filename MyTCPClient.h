@@ -21,32 +21,24 @@ class MyTCPClient : public QObject
 public:
     MyTCPClient();
 
-    QTcpSocket socket;
-
     void connect_to_server();
+    void disconnect_from_server();
     void send_message(QString str);
-    void send(QString str);
-    void close();
-
-    void player_move(bool player_x, Quad q);
 
 signals:
     void report(QString);
-    void update_game_state(bool players_turn_x, Board board);
+    void receivedData(QByteArray data);
 
 private slots:
-    void connected();
-    void received_data();
-    void closing();
+    void onSocketConnected();
+    void onSocketDisconnected();
+    void onReadyRead();
+    void onFlushTimerTick();
 
-    void flush_output();
 private:
-
-    TcpState state;
-
+    QTcpSocket socket;
+    TcpState state; // TODO: switch to idiomatic QAbstractSocket listening
     QTimer flush_timer;
-
-    QByteArray left_overs;
 
 };
 

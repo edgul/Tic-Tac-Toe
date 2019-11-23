@@ -7,6 +7,9 @@
 #include <QPoint>
 #include <QFont>
 
+#include <QDebug>
+
+
 BoardWidget::BoardWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::BoardWidget)
@@ -20,10 +23,9 @@ BoardWidget::~BoardWidget()
     delete ui;
 }
 
-void BoardWidget::set_board(Board * new_board)
+void BoardWidget::set_board(Board new_board)
 {
     board = new_board;
-
     repaint();
 }
 
@@ -133,12 +135,11 @@ bool BoardWidget::is_right(QPoint p)
 
 void BoardWidget::mousePressEvent(QMouseEvent * event)
 {
+    qDebug() << "BoardWidget::mousePressEvent";
+
     QPoint p(event->x(), event->y());
-
     Quad quad = quadrant(p);
-
     emit board_clicked(quad);
-
     repaint();
 }
 
@@ -167,9 +168,9 @@ void BoardWidget::paintEvent(QPaintEvent *event)
     font.setPointSize(14);
     painter.setFont(font);
 
-    for (int quad_index = 0; quad_index < board->size() ; quad_index++)
+    for (int quad_index = 0; quad_index < board.size() ; quad_index++)
     {
-        QString letter = board->piece_at(quad_index);
+        QString letter = board.piece_at(quad_index);
         if (letter == EMPTY_CELL) letter = "";
 
         QPoint p = point_at_quad((Quad) quad_index);

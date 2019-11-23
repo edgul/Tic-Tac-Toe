@@ -21,7 +21,7 @@ public:
     explicit BoardWidget(QWidget *parent = 0);
     ~BoardWidget();
 
-    void set_board(Board *new_board);
+    void set_board(Board new_board);
 
 signals:
     void board_clicked(Quad quad);
@@ -40,7 +40,7 @@ private:
     void mousePressEvent(QMouseEvent * event);
     void paintEvent(QPaintEvent * event);
 
-    Board * board;
+    Board board;
 
 };
 

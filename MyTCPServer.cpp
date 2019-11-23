@@ -20,17 +20,17 @@ MyTCPServer::MyTCPServer()
 
     std::cout << "Listening on " << HOST_ADDRESS << ":" << HOST_PORT << std::endl;
 
-    connect(this, SIGNAL(newConnection()), this, SLOT(new_connection()));
+    connect(this, SIGNAL(newConnection()), this, SLOT(onNewConnection()));
 
-    connect(&flush_timer, SIGNAL(timeout()),SLOT(flush_output()));
+    connect(&flush_timer, SIGNAL(timeout()),SLOT(onFlushTimerTick()));
     flush_timer.setInterval(1000);
     flush_timer.start();
 
-    connect(&send_timer, SIGNAL(timeout()),SLOT(send_loop()));
+    connect(&send_timer, SIGNAL(timeout()),SLOT(onSendTimerTick()));
     send_timer.setInterval(2000);
 }
 
-void MyTCPServer::new_connection()
+void MyTCPServer::onNewConnection()
 {
     if (sockets.length() >= MAX_SOCKETS)
     {
@@ -44,8 +44,8 @@ void MyTCPServer::new_connection()
     }
 
     QTcpSocket * new_socket = nextPendingConnection();
-    connect(new_socket, SIGNAL(readyRead()), SLOT(receive_data()));
-    connect(new_socket, SIGNAL(aboutToClose()), SLOT(close_connection()));
+    connect(new_socket, SIGNAL(readyRead()), SLOT(onReadyRead()));
+    connect(new_socket, SIGNAL(aboutToClose()), SLOT(onAboutToClose()));
 
     send_handshake_response(new_socket, HANDSHAKE_OK);
 
@@ -58,7 +58,7 @@ void MyTCPServer::new_connection()
 
 }
 
-void MyTCPServer::receive_data()
+void MyTCPServer::onReadyRead()
 {
     QTcpSocket * socket = (QTcpSocket *) sender();
     QByteArray data = socket->readAll();
@@ -72,11 +72,11 @@ void MyTCPServer::receive_data()
     }
     else
     {
-        std::cout << data.data();
+        emit received_data(data);
     }
 }
 
-void MyTCPServer::close_connection()
+void MyTCPServer::onAboutToClose()
 {
     QTcpSocket * sending_socket = (QTcpSocket *) sender();
 
@@ -100,12 +100,12 @@ void MyTCPServer::close_connection()
     }
 }
 
-void MyTCPServer::flush_output()
+void MyTCPServer::onFlushTimerTick()
 {
     std::flush(std::cout);
 }
 
-void MyTCPServer::send_loop()
+void MyTCPServer::onSendTimerTick()
 {
     for (int i = 0; i < sockets.length(); i++)
     {

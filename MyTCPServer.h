@@ -14,30 +14,30 @@ class MyTCPServer : public QTcpServer
 public:
     MyTCPServer();
 
+signals:
+    void received_data(QString data);
+
 private slots:
-    void new_connection();
-    void receive_data();
-    void close_connection();
+    void onNewConnection();
+    void onReadyRead();
+    void onAboutToClose();
 
-    void flush_output();
-
-    void send_loop();
+    void onFlushTimerTick();
+    void onSendTimerTick();
 
 private:
-
     void send_hello_world(QTcpSocket * socket, QString string);
     void send_handshake_response(QTcpSocket * socket, Handshake h);
     void send_delimited_message(QTcpSocket *socket, QByteArray bytes);
-
-    QList<QTcpSocket *> sockets;
-    QList<QString> socket_buffers;
-
-    QTimer flush_timer;
 
     void unpack_data(QByteArray data );
 
     QString left_overs;
 
+    QList<QTcpSocket *> sockets;
+    QList<QString> socket_buffers;
+
+    QTimer flush_timer;
     QTimer send_timer;
 };
 

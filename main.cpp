@@ -1,21 +1,21 @@
 #include "ClientWindow.h"
 #include <QApplication>
 
-#include "MyTCPServer.h"
 #include "MainWindowManager.h"
+#include "GameController.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
 
-    MyTCPServer tcp_server;
+    GameController gameController;
 
     ClientWindow w;
     w.set_player(true);
     w.show();
 
     ClientWindow w2;
-    w.set_player(false);
+    w2.set_player(false);
     w2.show();
 
     // MainWindowManager wm;

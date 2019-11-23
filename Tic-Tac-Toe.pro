@@ -32,8 +32,8 @@ SOURCES += main.cpp\
     AI.cpp \
     Board.cpp \
     MainWindowManager.cpp \
-    Player.cpp \
-    ClientWindow.cpp
+    ClientWindow.cpp \
+    GameController.cpp
 
 
 HEADERS  += \
@@ -46,8 +46,8 @@ HEADERS  += \
     data.h \
     Board.h \
     MainWindowManager.h \
-    Player.h \
-    ClientWindow.h
+    ClientWindow.h \
+    GameController.h
 
 
 FORMS    += \
