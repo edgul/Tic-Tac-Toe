@@ -26,7 +26,7 @@ void MyTCPClient::connect_to_server()
 
 void MyTCPClient::send_message(QString str)
 {
-    QString string_to_send = QString(DELIMITER) + str;
+    QString string_to_send = str + QString(DELIMITER);
 
     if (state != CONNECTED)
     {

@@ -33,7 +33,9 @@ SOURCES += main.cpp\
     Board.cpp \
     MainWindowManager.cpp \
     ClientWindow.cpp \
-    GameController.cpp
+    GameController.cpp \
+    Message.cpp \
+    Player.cpp
 
 
 HEADERS  += \
@@ -47,7 +49,9 @@ HEADERS  += \
     Board.h \
     MainWindowManager.h \
     ClientWindow.h \
-    GameController.h
+    GameController.h \
+    Message.h \
+    Player.h
 
 
 FORMS    += \

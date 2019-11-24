@@ -11,7 +11,7 @@ Game::Game()
 {
     turn_x = true;
     active = false;
-    one_player = true;
+    singlePlayer = true;
 }
 
 void Game::init()
@@ -24,22 +24,36 @@ void Game::init()
     active = true;
 }
 
-void Game::start_multiplayer()
+void Game::startMultiplayer(Player p1, Player p2)
 {
+    // TODO: game should decide who is what
+
+    if (p1.getPlayerType() == PLAYER_TYPE_X)
+    {
+        playerX = p1;
+        playerO = p2;
+    }
+    else
+    {
+        playerX = p2;
+        playerO = p1;
+    }
+
     init();
 
-    one_player = false;
+    singlePlayer = false;
 
+    emit gameInit(playerX, playerO);
 }
 
-void Game::start_one_player(Difficulty difficulty)
+void Game::startSinglePlayer(Difficulty difficulty)
 {
     init();
 
     ai.set_piece_type(PLAYER_O);
     ai.set_difficulty(difficulty);
 
-    one_player = true;
+    singlePlayer = true;
 }
 
 void Game::turn_cleanup()
@@ -47,11 +61,13 @@ void Game::turn_cleanup()
     bool game_over = false;
 
     // check for game over
+    Player winner;
     if (board.winner() == PLAYER_X) // x wins
     {
         QString msg = MSG_WIN_X;
         emit update_msg_label(msg);
 
+        winner = playerX;
         game_over = true;
 
     }
@@ -59,6 +75,7 @@ void Game::turn_cleanup()
     {
         QString msg = MSG_WIN_O;
         emit update_msg_label(msg);
+        winner = playerO;
 
         game_over = true;
     }
@@ -74,6 +91,12 @@ void Game::turn_cleanup()
     {
         // stop taking user input when the game is over
         active = false;
+
+        // TODO: send game over to users
+        EndType type = END_TYPE_TIE;
+        if (winner.getPlayerType() != PLAYER_TYPE_NONE) type = END_TYPE_WIN;
+
+        emit gameEnded(type, winner);
     }
     else
     {
@@ -86,34 +109,65 @@ void Game::turn_cleanup()
 
         // disable user input for one player game
         active = true;
-        if (one_player)
+        if (singlePlayer)
         {
             if (!turn_x)
             {
                 active = false;
             }
         }
+
+        emit updatedGameState(board);
     }
 }
 
-void Game::board_clicked(Quad quad)
+void Game::placePiece(Player player, Quad quad)
 {
     if (active) // accepting input from user
     {
-        if (board.quad_empty(quad)) // valid move
+        // TODO: simplify logic
+        bool proceed = false;
+        if (player.getPlayerType() == PLAYER_TYPE_X)
         {
-            // Place piece
-            QString piece = get_turn_piece();
-            board.place(piece, quad);
+            if (turn_x) proceed = true;
+        }
+        else
+        {
+            if (turn_x) proceed = true;
+        }
 
-            turn_cleanup();
-
-            if (one_player && !turn_x)
+        if (proceed)
+        {
+            if (board.quad_empty(quad)) // valid move
             {
-                ai_goes();
+                // Place piece
+                QString piece = get_turn_piece();
+                board.place(piece, quad);
+
+                turn_cleanup();
+
+                if (singlePlayer && !turn_x)
+                {
+                    ai_goes();
+                }
             }
         }
     }
+}
+
+void Game::quit(Player quittingPlayer)
+{
+    Player winningPlayer;
+    if (quittingPlayer == playerX)
+    {
+        winningPlayer = playerO;
+    }
+    else
+    {
+        winningPlayer = playerX;
+    }
+
+    emit gameEnded(END_TYPE_WIN, winningPlayer);
 }
 
 void Game::ai_goes()

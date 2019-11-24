@@ -4,7 +4,7 @@
 #define PLAYER_X "X"
 #define PLAYER_O "O"
 
-#define DELIMITER       "TTT "
+#define DELIMITER       " TTT "
 #define SEPARATOR       " "
 
 #define DELIMITER_LENGTH    4
@@ -28,18 +28,32 @@ enum Handshake
     HANDSHAKE_BUSY
 };
 
+enum Target
+{
+    TARGET_NONE,
+    TARGET_CONNECTION,
+    TARGET_GAME
+};
+
 enum Function
 {
+    FUNCTION_NONE,
     FUNCTION_HANDSHAKE_REQUEST,
     FUNCTION_HANDSHAKE_RESPONSE,
     FUNCTION_MOVE,
     FUNCTION_UPDATE_BOARD,
-    FUNCTION_HELLO_WORLD
+    FUNCTION_HELLO_WORLD,
+    FUNCTION_GAME_START,
+    FUNCTION_GAME_PLACE,
+    FUNCTION_GAME_QUIT,
+    FUNCTION_GAME_INIT,
+    FUNCTION_GAME_UPDATE,
+    FUNCTION_GAME_END
 };
 
 enum Quad
 {
-    QUAD_TOP_LEFT = 0,
+    QUAD_TOP_LEFT  = 0,
     QUAD_TOP_MID   ,
     QUAD_TOP_RIGHT ,
     QUAD_MID_LEFT  ,
@@ -47,7 +61,7 @@ enum Quad
     QUAD_MID_RIGHT ,
     QUAD_BOT_LEFT  ,
     QUAD_BOT_MID   ,
-    QUAD_BOT_RIGHT,
+    QUAD_BOT_RIGHT ,
     QUAD_NONE
 };
 

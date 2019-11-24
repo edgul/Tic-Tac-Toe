@@ -38,7 +38,7 @@ void ClientWindow::on_button_start_clicked()
         if (ui->radio_difficulty_medium->isChecked()) difficulty = DIFFICULTY_MEDIUM;
         if (ui->radio_difficulty_hard->isChecked()) difficulty = DIFFICULTY_HARD;
 
-        game.start_one_player(difficulty);
+        game.startSinglePlayer(difficulty);
     }
 }
 

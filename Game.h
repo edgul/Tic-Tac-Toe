@@ -4,6 +4,13 @@
 #include "BoardWidget.h"
 #include "AI.h"
 #include "Board.h"
+#include "Player.h"
+
+enum EndType
+{
+    END_TYPE_WIN,
+    END_TYPE_TIE
+};
 
 class Game : public QObject
 {
@@ -12,21 +19,29 @@ class Game : public QObject
 public:
     Game();
 
-    void start_multiplayer();
-    void start_one_player(Difficulty difficulty);
+    void startMultiplayer(Player p1, Player p2);
+    void startSinglePlayer(Difficulty difficulty);
 
-    void board_clicked(Quad quad);
+    void placePiece(Player player, Quad quad);
+    void quit(Player player_x);
 
 signals:
     void update_msg_label(QString msg);
+
+    void gameInit(Player p1, Player p2);
+    void updatedGameState(Board board);
+    void gameEnded(EndType endType, Player winningPlayer);
 
 private:
     AI ai;
     Board board;
 
+    Player playerX;
+    Player playerO;
+
     bool turn_x;
-    bool active;
-    bool one_player;
+    bool active; // TODO: game state
+    bool singlePlayer;
 
     void init();
     void turn_cleanup();

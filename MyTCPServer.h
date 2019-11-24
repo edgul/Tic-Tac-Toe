@@ -15,7 +15,7 @@ public:
     MyTCPServer();
 
 signals:
-    void received_data(QString data);
+    void received_data(QString data, int user);
 
 private slots:
     void onNewConnection();
@@ -36,9 +36,12 @@ private:
 
     QList<QTcpSocket *> sockets;
     QList<QString> socket_buffers;
+    QMap<QTcpSocket*, int> users;
 
     QTimer flush_timer;
     QTimer send_timer;
+
+    int userCount;
 };
 
 #endif // MYTCPSERVER_H

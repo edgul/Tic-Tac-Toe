@@ -7,7 +7,8 @@
 #define MAX_SOCKETS (4)
 
 
-MyTCPServer::MyTCPServer()
+MyTCPServer::MyTCPServer() :
+    userCount(0)
 {
 
     QHostAddress host_address(HOST_ADDRESS);
@@ -50,8 +51,10 @@ void MyTCPServer::onNewConnection()
     send_handshake_response(new_socket, HANDSHAKE_OK);
 
     sockets.append(new_socket);
+    users.insert(new_socket, userCount);
 
-    std::cout << "Connection formed\n";
+    std::cout << "Connection formed with user: " << userCount<< "\n";
+    userCount++;
 
     // start the send loop
     send_timer.start();
@@ -72,7 +75,8 @@ void MyTCPServer::onReadyRead()
     }
     else
     {
-        emit received_data(data);
+        int user = users[socket];
+        emit received_data(data, user);
     }
 }
 
