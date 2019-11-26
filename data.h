@@ -65,4 +65,11 @@ enum Quad
     QUAD_NONE
 };
 
+enum PieceType
+{
+    PIECE_TYPE_NONE,
+    PIECE_TYPE_X,
+    PIECE_TYPE_O
+};
+
 #endif // DATA_H

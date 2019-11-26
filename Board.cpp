@@ -199,6 +199,11 @@ Quad Board::available_win(QString piece_type)
     return win_quad;
 }
 
+QString Board::toString()
+{
+    return board.join("");
+}
+
 void Board::set_board_from_string(QString b_string)
 {
     QList<QString> list = b_string.split("");

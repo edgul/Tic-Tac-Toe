@@ -31,6 +31,18 @@ MyTCPServer::MyTCPServer() :
     send_timer.setInterval(2000);
 }
 
+void MyTCPServer::sendMessage(Message msg, int user)
+{
+    if (users.contains(user))
+    {
+        QTcpSocket *socket = users[user];
+        QString toSend = msg.toString() + QString(DELIMITER);
+        qDebug() << "Server sending: " << toSend;
+        QByteArray data = toSend.toLatin1();
+        socket->write(data);
+    }
+}
+
 void MyTCPServer::onNewConnection()
 {
     if (sockets.length() >= MAX_SOCKETS)
@@ -40,7 +52,6 @@ void MyTCPServer::onNewConnection()
         QTcpSocket * new_socket = nextPendingConnection();
         send_handshake_response(new_socket, HANDSHAKE_BUSY);
         new_socket->close();
-
         return;
     }
 
@@ -51,14 +62,13 @@ void MyTCPServer::onNewConnection()
     send_handshake_response(new_socket, HANDSHAKE_OK);
 
     sockets.append(new_socket);
-    users.insert(new_socket, userCount);
+    users.insert(userCount, new_socket);
 
     std::cout << "Connection formed with user: " << userCount<< "\n";
     userCount++;
 
     // start the send loop
     send_timer.start();
-
 }
 
 void MyTCPServer::onReadyRead()
@@ -75,8 +85,25 @@ void MyTCPServer::onReadyRead()
     }
     else
     {
-        int user = users[socket];
-        emit received_data(data, user);
+        int foundUser = -1;
+        foreach (int user, users.keys())
+        {
+            if (socket == users[user])
+            {
+                foundUser = user;
+                break;
+            }
+        }
+
+        if (foundUser != -1)
+        {
+            emit receivedData(data, foundUser);
+        }
+        else
+        {
+            qDebug() << "SERVER: failed to find user for socket";
+            Q_ASSERT(false);
+        }
     }
 }
 
@@ -129,7 +156,7 @@ void MyTCPServer::send_hello_world(QTcpSocket *socket, QString string)
     QByteArray msg = QString::number(FUNCTION_HELLO_WORLD).toLatin1() + SEPARATOR +
                      string.toLatin1();
 
-    send_delimited_message(socket, msg);
+    // send_delimited_message(socket, msg);
 }
 
 void MyTCPServer::send_handshake_response(QTcpSocket * socket, Handshake h)
@@ -138,7 +165,7 @@ void MyTCPServer::send_handshake_response(QTcpSocket * socket, Handshake h)
     QByteArray handshake = QString::number(FUNCTION_HANDSHAKE_RESPONSE).toLatin1() + SEPARATOR +
                            QString::number(h).toLatin1();
 
-    send_delimited_message(socket, handshake);
+    // send_delimited_message(socket, handshake);
 
 }
 

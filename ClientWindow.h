@@ -34,9 +34,6 @@ private slots:
 private:
     Ui::ClientWindow *ui;
 
-    void report(QString str);
-    void update_game_state(bool players_turn_x, Board board);
-
     bool piece_x;
     bool turn_x;
     Game game;
@@ -44,6 +41,12 @@ private:
 
     MyTCPClient tcp_client;
     QByteArray left_overs;
+
+    QString messageStream;
+
+    void report(QString str);
+    void update_game_state(Board board);
+    void processMessage(Message msg);
 
 };
 

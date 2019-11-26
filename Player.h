@@ -1,22 +1,17 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-enum PlayerType
-{
-    PLAYER_TYPE_NONE,
-    PLAYER_TYPE_X,
-    PLAYER_TYPE_O
-};
+#include "data.h"
 
 class Player
 {
 public:
     Player();
     Player(int user);
-    Player(int user, PlayerType type);
+    Player(int user, PieceType type);
 
-    PlayerType getPlayerType() const;
-    void setPlayerType(PlayerType type);
+    PieceType getPieceType() const;
+    void setPlayerType(PieceType type);
 
     void setUser(int user);
     int getUser() const;
@@ -24,8 +19,7 @@ public:
     friend bool operator==(const Player& lhs, const Player& rhs);
 
 private:
-    PlayerType type;
-
+    PieceType type;
     int user;
 };
 

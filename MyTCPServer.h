@@ -6,6 +6,7 @@
 #include <QTimer>
 
 #include "data.h"
+#include "Message.h"
 
 
 class MyTCPServer : public QTcpServer
@@ -14,8 +15,10 @@ class MyTCPServer : public QTcpServer
 public:
     MyTCPServer();
 
+    void sendMessage(Message msg, int user);
+
 signals:
-    void received_data(QString data, int user);
+    void receivedData(QString data, int user);
 
 private slots:
     void onNewConnection();
@@ -36,7 +39,7 @@ private:
 
     QList<QTcpSocket *> sockets;
     QList<QString> socket_buffers;
-    QMap<QTcpSocket*, int> users;
+    QMap<int, QTcpSocket*> users;
 
     QTimer flush_timer;
     QTimer send_timer;

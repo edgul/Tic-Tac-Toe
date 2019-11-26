@@ -28,7 +28,7 @@ void Game::startMultiplayer(Player p1, Player p2)
 {
     // TODO: game should decide who is what
 
-    if (p1.getPlayerType() == PLAYER_TYPE_X)
+    if (p1.getPieceType() == PIECE_TYPE_X)
     {
         playerX = p1;
         playerO = p2;
@@ -92,11 +92,7 @@ void Game::turn_cleanup()
         // stop taking user input when the game is over
         active = false;
 
-        // TODO: send game over to users
-        EndType type = END_TYPE_TIE;
-        if (winner.getPlayerType() != PLAYER_TYPE_NONE) type = END_TYPE_WIN;
-
-        emit gameEnded(type, winner);
+        emit gameEnded(winner);
     }
     else
     {
@@ -117,7 +113,7 @@ void Game::turn_cleanup()
             }
         }
 
-        emit updatedGameState(board);
+        emit gameStateUpdated(playerX, playerO, board);
     }
 }
 
@@ -127,7 +123,7 @@ void Game::placePiece(Player player, Quad quad)
     {
         // TODO: simplify logic
         bool proceed = false;
-        if (player.getPlayerType() == PLAYER_TYPE_X)
+        if (player.getPieceType() == PIECE_TYPE_X)
         {
             if (turn_x) proceed = true;
         }
@@ -167,7 +163,17 @@ void Game::quit(Player quittingPlayer)
         winningPlayer = playerX;
     }
 
-    emit gameEnded(END_TYPE_WIN, winningPlayer);
+    emit gameEnded(winningPlayer);
+}
+
+Player Game::getPlayer1()
+{
+    return playerX;
+}
+
+Player Game::getPlayer2()
+{
+    return playerO;
 }
 
 void Game::ai_goes()

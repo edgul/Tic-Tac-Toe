@@ -3,27 +3,27 @@
 Player::Player()
 {
     user = -1;
-    type = PLAYER_TYPE_NONE;
+    type = PIECE_TYPE_NONE;
 }
 
 Player::Player(int user)
 {
     setUser(user);
-    setPlayerType(PLAYER_TYPE_NONE);
+    setPlayerType(PIECE_TYPE_NONE);
 }
 
-Player::Player(int user, PlayerType type)
+Player::Player(int user, PieceType type)
 {
     setPlayerType(type);
     setUser(user);
 }
 
-PlayerType Player::getPlayerType() const
+PieceType Player::getPieceType() const
 {
     return type;
 }
 
-void Player::setPlayerType(PlayerType type)
+void Player::setPlayerType(PieceType type)
 {
     this->type = type;
 }

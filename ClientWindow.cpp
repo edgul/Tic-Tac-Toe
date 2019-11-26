@@ -1,6 +1,8 @@
 #include "ClientWindow.h"
 #include "ui_ClientWindow.h"
 
+#include "Message.h"
+
 ClientWindow::ClientWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ClientWindow)
@@ -27,10 +29,10 @@ void ClientWindow::set_player(bool x)
 
 void ClientWindow::on_button_start_clicked()
 {
-
     if (ui->radio_multi_player->isChecked())
     {
-        // game.start_multiplayer();
+        Message msg(TARGET_GAME, FUNCTION_GAME_START);
+        tcp_client.sendMessage(msg);
     }
     else
     {
@@ -54,12 +56,12 @@ void ClientWindow::onTcpClientReport(QString msg)
 
 void ClientWindow::on_button_connect_clicked()
 {
-    tcp_client.connect_to_server();
+    tcp_client.connectToServer();
 }
 
 void ClientWindow::on_button_close_connection_clicked()
 {
-    tcp_client.disconnect_from_server();
+    tcp_client.disconnectFromServer();
 }
 
 void ClientWindow::on_radio_one_player_clicked()
@@ -76,80 +78,25 @@ void ClientWindow::onBoardClicked(Quad quad)
 {
     if (turn_x == piece_x)
     {
-        QString data = QString(PID_MOVE) + QString(turn_x) + QString(quad);
-        tcp_client.send_message(data);
+        Message msg(TARGET_GAME, FUNCTION_GAME_PLACE, quad);
+        tcp_client.sendMessage(msg);
     }
 }
 
 void ClientWindow::onTcpClientReceivedData(QByteArray data)
 {
-    QByteArray all_data = left_overs + data;
+    messageStream += QString::fromLatin1(data);
 
-    int i = 0;
-    while (all_data.indexOf(DELIMITER, i) != -1)
+    int firstDelimiter;
+    while ((firstDelimiter = messageStream.indexOf(DELIMITER)) != -1)
     {
-        i = all_data.indexOf(DELIMITER) + DELIMITER_LENGTH;
+        QString message = messageStream.mid(0, firstDelimiter-1);
+        messageStream = messageStream.remove(0, firstDelimiter+2);
+        qDebug() << "Received : " << message;
 
-        Function function = (Function) all_data.mid(i, FUNCTION_LENGTH).toInt();
-        i += FUNCTION_LENGTH + 1;
-
-        if (function == FUNCTION_HANDSHAKE_RESPONSE)
-        {
-            qDebug() << "TcpClient::Handshake Response";
-
-            int next_separator = all_data.indexOf(SEPARATOR, i);
-            QByteArray handshake_response = all_data.mid(i, next_separator - i);
-            Handshake response = (Handshake) handshake_response.toInt();
-
-            i = next_separator + 1;
-
-            if (response == HANDSHAKE_OK)
-            {
-                report("Connected to Server.");
-            }
-            else
-            {
-                report("ERR: Server Busy.");
-            }
-        }
-        else if (function == FUNCTION_UPDATE_BOARD)
-        {
-            qDebug() << "TCPClient::updating board";
-            QString turn_x = all_data.mid(i, PID_STATE_LENGTH);
-            bool player_turn_x = true;
-            if (turn_x == "F") player_turn_x = false;
-
-            i += PID_STATE_LENGTH;
-
-            QString board_string = all_data.mid(i, PID_STATE_BOARD_LENGTH);
-            i += PID_STATE_BOARD_LENGTH;
-
-            Board board;
-            board.set_board_from_string(board_string);
-
-            update_game_state(player_turn_x, board);
-        }
-        else if (function == FUNCTION_HELLO_WORLD) // o cutoff
-        {
-            qDebug() << "TCPClient::Hello World";
-
-            int next_separator = all_data.indexOf(SEPARATOR, i);
-            QByteArray msg = all_data.mid(i, next_separator - i);
-            i = next_separator + 1;
-
-            next_separator = all_data.indexOf(SEPARATOR, i);
-            QByteArray msg2 = all_data.mid(i, next_separator - i);
-            i = next_separator + 1;
-
-            next_separator = all_data.indexOf(SEPARATOR, i);
-            QByteArray msg3 = all_data.mid(i, next_separator - i);
-            i = next_separator + 1;
-
-            report(msg + msg2 + msg3);
-        }
+        Message msg(message);
+        processMessage(msg);
     }
-
-    left_overs = all_data.mid(i);
 }
 
 void ClientWindow::report(QString str)
@@ -157,8 +104,31 @@ void ClientWindow::report(QString str)
     ui->output->appendPlainText(str);
 }
 
-void ClientWindow::update_game_state(bool players_turn_x, Board board)
+void ClientWindow::update_game_state(Board board)
 {
-    turn_x = players_turn_x;
+    turn_x = !turn_x;
     board_widget->set_board(board);
 }
+
+void ClientWindow::processMessage(Message msg)
+{
+    if (msg.getFunction() == FUNCTION_HANDSHAKE_RESPONSE)
+    {
+        qDebug() << "TcpClient::Handshake Response -- undetermined result";
+
+    }
+    else if (msg.getFunction() == FUNCTION_UPDATE_BOARD)
+    {
+        // TODO: improve this
+        Board board;
+        board.set_board_from_string(msg.getBoardStr());
+        update_game_state(board);
+    }
+    else if (msg.getFunction() == FUNCTION_HELLO_WORLD) // o cutoff
+    {
+        qDebug() << "TCPClient::Hello World";
+
+        report("Client received hello world");
+    }
+}
+

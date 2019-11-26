@@ -30,6 +30,8 @@ public:
     QList<QList<Quad>> wins;
     Quad available_win(QString piece_type);
 
+    QString toString();
+
 private:
     QList<QString> board;
 

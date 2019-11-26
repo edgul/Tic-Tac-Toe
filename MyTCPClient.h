@@ -6,7 +6,7 @@
 #include <QTimer>
 #include "data.h"
 #include "Board.h"
-
+#include "Message.h"
 
 enum TcpState
 {
@@ -21,8 +21,9 @@ class MyTCPClient : public QObject
 public:
     MyTCPClient();
 
-    void connect_to_server();
-    void disconnect_from_server();
+    void connectToServer();
+    void disconnectFromServer();
+    void sendMessage(Message msg);
     void send_message(QString str);
 
 signals:

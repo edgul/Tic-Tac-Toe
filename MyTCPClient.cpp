@@ -15,7 +15,7 @@ MyTCPClient::MyTCPClient()
     flush_timer.start();
 }
 
-void MyTCPClient::connect_to_server()
+void MyTCPClient::connectToServer()
 {
     if (state == DISCONNECTED)
     {
@@ -24,9 +24,9 @@ void MyTCPClient::connect_to_server()
     }
 }
 
-void MyTCPClient::send_message(QString str)
+void MyTCPClient::sendMessage(Message msg)
 {
-    QString string_to_send = str + QString(DELIMITER);
+    QString msgToSend = msg.toString() + QString(DELIMITER);
 
     if (state != CONNECTED)
     {
@@ -34,13 +34,22 @@ void MyTCPClient::send_message(QString str)
         return;
     }
 
-    emit report("Client Sending: " + string_to_send);
+    emit report("Client Sending Message: " + msgToSend);
 
+    QByteArray data = msgToSend.toLatin1();
+    socket.write(data);
+}
+
+void MyTCPClient::send_message(QString str)
+{
+    // TODO: delete this once Connection is handled by Message class
+    QString string_to_send = str + QString(DELIMITER);
+    emit report("Client Sending Message: " + string_to_send);
     QByteArray data = string_to_send.toLatin1();
     socket.write(data);
 }
 
-void MyTCPClient::disconnect_from_server()
+void MyTCPClient::disconnectFromServer()
 {
     if (state == DISCONNECTED)
     {

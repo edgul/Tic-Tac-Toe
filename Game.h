@@ -6,16 +6,10 @@
 #include "Board.h"
 #include "Player.h"
 
-enum EndType
-{
-    END_TYPE_WIN,
-    END_TYPE_TIE
-};
 
 class Game : public QObject
 {
     Q_OBJECT
-
 public:
     Game();
 
@@ -25,12 +19,15 @@ public:
     void placePiece(Player player, Quad quad);
     void quit(Player player_x);
 
+    Player getPlayer1();
+    Player getPlayer2();
+
 signals:
     void update_msg_label(QString msg);
 
     void gameInit(Player p1, Player p2);
-    void updatedGameState(Board board);
-    void gameEnded(EndType endType, Player winningPlayer);
+    void gameStateUpdated(Player p1, Player p2, Board board);
+    void gameEnded(Player winningPlayer);
 
 private:
     AI ai;
