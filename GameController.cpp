@@ -58,22 +58,16 @@ void GameController::processMessage(QString messageStr, int user)
     {
         qDebug() << "Received Target NONE...";
     }
-    else if (msg.getTarget() == TARGET_CONNECTION)
-    {
-        handleConnectionMessage(msg);
-    }
-    else
+    else if (msg.getTarget() == TARGET_GAME)
     {
         handleGameMessage(msg, user);
     }
+    else
+    {
+        Q_ASSERT(false);
+    }
 }
 
-void GameController::handleConnectionMessage(Message msg)
-{
-    // TODO: control TcpServer connect/disconnect from here
-
-    // if user disconnected while game in progress then inititate game quitting functions
-}
 
 void GameController::handleGameMessage(Message msg, int user)
 {
@@ -90,6 +84,7 @@ void GameController::handleGameMessage(Message msg, int user)
             }
         }
 
+        // Add player to list
         PieceType newPieceType = PIECE_TYPE_NONE;
         if (otherPlayer)
         {

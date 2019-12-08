@@ -1,48 +1,18 @@
 #ifndef DATA_H
 #define DATA_H
 
-#define PLAYER_X "X"
-#define PLAYER_O "O"
-
-#define DELIMITER       " TTT "
-#define SEPARATOR       " "
-
-#define DELIMITER_LENGTH    4
-#define FUNCTION_LENGTH     1
-
-#define PID_LENGTH      4
-
-#define PID_STATE "STAT"
-#define PID_MOVE  "MOVE"
-#define PID_HELLO "HELL"
-
-#define PID_STATE_LENGTH (1)
-#define PID_STATE_BOARD_LENGTH (9)
-
-#define SERVER_OK   "SERVER_OK"
-#define SERVER_BUSY "SERVER_BUSY"
-
-enum Handshake
-{
-    HANDSHAKE_OK,
-    HANDSHAKE_BUSY
-};
+#define PLAYER_X  "X"
+#define PLAYER_O  "O"
 
 enum Target
 {
     TARGET_NONE,
-    TARGET_CONNECTION,
     TARGET_GAME
 };
 
 enum Function
 {
     FUNCTION_NONE,
-    FUNCTION_HANDSHAKE_REQUEST,
-    FUNCTION_HANDSHAKE_RESPONSE,
-    FUNCTION_MOVE,
-    FUNCTION_UPDATE_BOARD,
-    FUNCTION_HELLO_WORLD,
     FUNCTION_GAME_START,
     FUNCTION_GAME_PLACE,
     FUNCTION_GAME_QUIT,

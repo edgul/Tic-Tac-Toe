@@ -4,6 +4,8 @@
 #include <QString>
 #include "data.h"
 
+#define DELIMITER " TTT "
+
 class Message
 {
 public:

@@ -11,7 +11,9 @@ ClientWindow::ClientWindow(QWidget *parent) :
 
     board_widget = ui->board_widget;
 
-    ui->radio_multi_player->setChecked(true);
+    bool multiPlayer = true;
+    ui->radio_multi_player->setChecked(multiPlayer);
+    ui->frame_difficulty->setEnabled(!multiPlayer);
 
     connect(board_widget, SIGNAL(board_clicked(Quad)), SLOT(onBoardClicked(Quad)));
     connect(&game, SIGNAL(update_msg_label(QString)), SLOT(onGameUpdateMsgLabel(QString)));
@@ -104,17 +106,12 @@ void ClientWindow::report(QString str)
 
 void ClientWindow::processMessage(Message msg)
 {
-    if (msg.getFunction() == FUNCTION_HANDSHAKE_RESPONSE)
-    {
-        qDebug() << "TcpClient::Handshake Response -- undetermined result";
-    }
-    else if (msg.getFunction() == FUNCTION_GAME_INIT)
+    if (msg.getFunction() == FUNCTION_GAME_INIT)
     {
 
     }
     else if (msg.getFunction() == FUNCTION_GAME_UPDATE)
     {
-        // TODO: improve this
         Board board;
         board.set_board_from_string(msg.getBoardStr());
         board_widget->set_board(board);
@@ -123,11 +120,6 @@ void ClientWindow::processMessage(Message msg)
     {
 
     }
-    else if (msg.getFunction() == FUNCTION_HELLO_WORLD) // o cutoff
-    {
-        qDebug() << "TCPClient::Hello World";
 
-        report("Client received hello world");
-    }
 }
 

@@ -5,7 +5,6 @@ A client-server tic-tac-toe game written in C++ and Qt.
 
 Client-Server:
 * Separate client-server threads/projects
-* Finish basic sending/receiving of game logic
 
 Improvements:
 * add game metrics

@@ -27,7 +27,6 @@ private:
     QList<Player> players;
 
     void processMessage(QString messageStr, int user);
-    void handleConnectionMessage(Message msg);
     void handleGameMessage(Message msg, int user);
 };
 

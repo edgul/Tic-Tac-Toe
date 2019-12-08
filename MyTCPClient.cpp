@@ -41,15 +41,6 @@ void MyTCPClient::sendMessage(Message msg)
     socket.write(data);
 }
 
-void MyTCPClient::send_message(QString str)
-{
-    // TODO: delete this once Connection is handled by Message class
-    QString string_to_send = str + QString(DELIMITER);
-    // emit report("Client Sending Message: " + string_to_send);
-    QByteArray data = string_to_send.toLatin1();
-    socket.write(data);
-}
-
 void MyTCPClient::disconnectFromServer()
 {
     if (state == DISCONNECTED)
@@ -58,7 +49,7 @@ void MyTCPClient::disconnectFromServer()
         return;
     }
 
-    send_message("Close");
+    socket.disconnect();
 }
 
 void MyTCPClient::onSocketConnected()
@@ -69,10 +60,8 @@ void MyTCPClient::onSocketConnected()
 
 void MyTCPClient::onSocketDisconnected()
 {
-    qDebug() << "Client socket disconnected";
     state = DISCONNECTED;
     emit report("Connection Closed.\n");
-
 }
 
 void MyTCPClient::onReadyRead()

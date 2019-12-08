@@ -26,9 +26,6 @@ MyTCPServer::MyTCPServer() :
     connect(&flush_timer, SIGNAL(timeout()),SLOT(onFlushTimerTick()));
     flush_timer.setInterval(1000);
     flush_timer.start();
-
-    connect(&send_timer, SIGNAL(timeout()),SLOT(onSendTimerTick()));
-    send_timer.setInterval(2000);
 }
 
 void MyTCPServer::sendMessage(Message msg, int user)
@@ -49,7 +46,6 @@ void MyTCPServer::onNewConnection()
         std::cout << "Cannot form new connection. Server busy";
 
         QTcpSocket * new_socket = nextPendingConnection();
-        send_handshake_response(new_socket, HANDSHAKE_BUSY);
         new_socket->close();
         return;
     }
@@ -57,17 +53,13 @@ void MyTCPServer::onNewConnection()
     QTcpSocket * new_socket = nextPendingConnection();
     connect(new_socket, SIGNAL(readyRead()), SLOT(onReadyRead()));
     connect(new_socket, SIGNAL(aboutToClose()), SLOT(onAboutToClose()));
-
-    send_handshake_response(new_socket, HANDSHAKE_OK);
+    connect(new_socket, SIGNAL(disconnected()), SLOT(onDisconnected()));
 
     sockets.append(new_socket);
     users.insert(userCount, new_socket);
 
     std::cout << "Connection formed with user: " << userCount<< "\n";
     userCount++;
-
-    // start the send loop
-    send_timer.start();
 }
 
 void MyTCPServer::onReadyRead()
@@ -133,74 +125,9 @@ void MyTCPServer::onFlushTimerTick()
     std::flush(std::cout);
 }
 
-void MyTCPServer::onSendTimerTick()
+void MyTCPServer::onDisconnected()
 {
-    for (int i = 0; i < sockets.length(); i++)
-    {
-        QTcpSocket * socket = sockets[i];
+    QTcpSocket * socket = (QTcpSocket *) sender();
 
-        QString i_str = QString::number(i);
-        send_hello_world(socket, "hello world " + i_str);
-
-        // QString msg = "SERVER: Wrote to socket " + QString::number(i) + "\n";
-        // std::cout << msg.toLatin1().data();
-
-    }
+    // user disconnected
 }
-
-void MyTCPServer::send_hello_world(QTcpSocket *socket, QString string)
-{
-    QByteArray msg = QString::number(FUNCTION_HELLO_WORLD).toLatin1() + SEPARATOR +
-                     string.toLatin1();
-
-    // send_delimited_message(socket, msg);
-}
-
-void MyTCPServer::send_handshake_response(QTcpSocket * socket, Handshake h)
-{
-
-    QByteArray handshake = QString::number(FUNCTION_HANDSHAKE_RESPONSE).toLatin1() + SEPARATOR +
-                           QString::number(h).toLatin1();
-
-    // send_delimited_message(socket, handshake);
-
-}
-
-void MyTCPServer::send_delimited_message(QTcpSocket * socket, QByteArray bytes)
-{
-    if (socket == 0) return;
-
-    socket->write("TTT " + bytes + " ");
-}
-
-void MyTCPServer::unpack_data(QByteArray data)
-{
-//    QString all_data = left_overs + QString(data);
-
-//    int i = 0;
-//    while (all_data.indexOf(DELIMITER, i) != -1)
-//    {
-//        int i = all_data.indexOf(DELIMITER) + 3;
-
-//        QString pid = all_data.mid(i, PID_LENGTH);
-//        i += PID_LENGTH;
-
-//        if (pid == PID_MOVE)
-//        {
-//            QString turn_x = all_data.mid(i, PID_STATE_LENGTH);
-//            bool player_turn_x = true;
-//            if (turn_x == "F") player_turn_x = false;
-
-//            i += PID_STATE_LENGTH;
-
-//            QString board_string = all_data.mid(i, PID_STATE_BOARD_LENGTH);
-//            i += PID_STATE_BOARD_LENGTH;
-
-//            Board board;
-//            board.set_board_from_string(board_string);
-
-//            emit update_game_state(player_turn_x, board);
-//        }
-//    }
-}
-

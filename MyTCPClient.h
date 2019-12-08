@@ -24,7 +24,6 @@ public:
     void connectToServer();
     void disconnectFromServer();
     void sendMessage(Message msg);
-    void send_message(QString str);
 
 signals:
     void report(QString);
