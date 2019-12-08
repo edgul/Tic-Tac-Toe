@@ -129,5 +129,19 @@ void MyTCPServer::onDisconnected()
 {
     QTcpSocket * socket = (QTcpSocket *) sender();
 
-    // user disconnected
+    int removeUser = -1;
+    foreach (int user, users.keys())
+    {
+        if (socket == users[user])
+        {
+            removeUser = user;
+            break;
+        }
+    }
+
+    if (removeUser != -1)
+    {
+        users.remove(removeUser);
+        emit userDisconnected(removeUser);
+    }
 }

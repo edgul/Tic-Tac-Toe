@@ -12,7 +12,10 @@
 
 BoardWidget::BoardWidget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::BoardWidget)
+    ui(new Ui::BoardWidget),
+    winner_(PIECE_TYPE_NONE),
+    active_(false),
+    overlayMessage_("")
 {
     ui->setupUi(this);
 
@@ -23,9 +26,35 @@ BoardWidget::~BoardWidget()
     delete ui;
 }
 
-void BoardWidget::set_board(Board new_board)
+void BoardWidget::clear()
+{
+    board.clear();
+    winner_ = PIECE_TYPE_NONE;
+    overlayMessage_ = "";
+    repaint();
+}
+
+void BoardWidget::setActive(bool active)
+{
+    active_ = active;
+    repaint();
+}
+
+void BoardWidget::setBoard(Board new_board)
 {
     board = new_board;
+    repaint();
+}
+
+void BoardWidget::setWinner(PieceType pieceType)
+{
+    winner_ = pieceType;
+    repaint();
+}
+
+void BoardWidget::setOverlayMessage(QString overlayMsg)
+{
+    overlayMessage_ = overlayMsg;
     repaint();
 }
 
@@ -137,7 +166,7 @@ void BoardWidget::mousePressEvent(QMouseEvent * event)
 {
     QPoint p(event->x(), event->y());
     Quad quad = quadrant(p);
-    emit board_clicked(quad);
+    emit boardClicked(quad);
     repaint();
 }
 
@@ -156,12 +185,9 @@ void BoardWidget::paintEvent(QPaintEvent *event)
     QLine horizontal_one_third(0, one_third_y, width(), one_third_y);
     QLine horizontal_two_thirds(0, two_thirds_y, width(), two_thirds_y);
 
-    QString winner = board.winner();
-    bool winOrTie = winner != "" || board.full();
+    if (!active_) painter.setOpacity(.25);
 
-    if (winOrTie) painter.setOpacity(.25);
-
-    // draw separators
+    // separators
     painter.drawLine(vertical_one_third);
     painter.drawLine(vertical_two_thirds);
     painter.drawLine(horizontal_one_third);
@@ -171,7 +197,7 @@ void BoardWidget::paintEvent(QPaintEvent *event)
     font.setPointSize(14);
     painter.setFont(font);
 
-    // draw letters
+    // pieces
     for (int quad_index = 0; quad_index < board.size() ; quad_index++)
     {
         QString letter = board.piece_at(quad_index);
@@ -180,24 +206,12 @@ void BoardWidget::paintEvent(QPaintEvent *event)
         painter.drawText(p, letter);
     }
 
-    if (winOrTie)
+    // game over message
+    if (overlayMessage_ != "")
     {
         painter.setOpacity(1);
-        QString winMessage;
-        if (winner == PLAYER_O)
-        {
-            winMessage = "O wins!";
-        }
-        else if (winner == PLAYER_X)
-        {
-            winMessage = "X wins!";
-        }
-        else
-        {
-            winMessage = "Tie!";
-        }
         painter.setPen(Qt::red);
-        painter.drawText(QPoint(width()/2, height()/2), winMessage);
+        painter.drawText(QPoint(width()/2, height()/2), overlayMessage_);
     }
 
     QWidget::paintEvent(event);

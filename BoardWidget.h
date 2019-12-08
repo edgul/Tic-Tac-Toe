@@ -21,10 +21,14 @@ public:
     explicit BoardWidget(QWidget *parent = 0);
     ~BoardWidget();
 
-    void set_board(Board new_board);
+    void clear();
+    void setActive(bool active);
+    void setBoard(Board new_board);
+    void setWinner(PieceType pieceType);
+    void setOverlayMessage(QString overlayMsg);
 
 signals:
-    void board_clicked(Quad quad);
+    void boardClicked(Quad quad);
 
 private:
     Ui::BoardWidget *ui;
@@ -41,6 +45,10 @@ private:
     void paintEvent(QPaintEvent * event);
 
     Board board;
+
+    PieceType winner_;
+    bool active_;
+    QString overlayMessage_;
 
 };
 

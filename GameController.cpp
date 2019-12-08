@@ -6,6 +6,7 @@ GameController::GameController() :
     messageStream("")
 {
     connect(&tcp_server, SIGNAL(receivedData(QString,int)), SLOT(onReceivedData(QString, int)));
+    connect(&tcp_server, SIGNAL(userDisconnected(int)), SLOT(onUserDisconnected(int)));
 
     connect(&game, SIGNAL(gameInit(Player,Player)), SLOT(onGameInit(Player,Player)));
     connect(&game, SIGNAL(gameStateUpdated(Player, Player, Board)), SLOT(onGameStateUpdated(Player, Player, Board)));
@@ -48,6 +49,20 @@ void GameController::onGameEnded(Player winningPlayer)
 
     tcp_server.sendMessage(msg, p1.getUser());
     tcp_server.sendMessage(msg, p2.getUser());
+}
+
+void GameController::onUserDisconnected(int user)
+{
+    Player player(user);
+    players.removeOne(player);
+
+    if (game.getActive())
+    {
+        if (game.getPlayer1() == player || game.getPlayer2() == player)
+        {
+            game.quit(player);
+        }
+    }
 }
 
 void GameController::processMessage(QString messageStr, int user)
@@ -110,6 +125,8 @@ void GameController::handleGameMessage(Message msg, int user)
     {
         Player actingPlayer = players[players.indexOf(Player(user))];
         game.placePiece(actingPlayer, msg.getQuad());
+        game.checkForGameOver();
+
     }
 }
 

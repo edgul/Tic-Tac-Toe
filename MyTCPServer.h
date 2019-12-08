@@ -19,6 +19,7 @@ public:
 
 signals:
     void receivedData(QString data, int user);
+    void userDisconnected(int user);
 
 private slots:
     void onNewConnection();

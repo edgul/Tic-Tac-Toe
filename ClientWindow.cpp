@@ -15,7 +15,7 @@ ClientWindow::ClientWindow(QWidget *parent) :
     ui->radio_multi_player->setChecked(multiPlayer);
     ui->frame_difficulty->setEnabled(!multiPlayer);
 
-    connect(board_widget, SIGNAL(board_clicked(Quad)), SLOT(onBoardClicked(Quad)));
+    connect(board_widget, SIGNAL(boardClicked(Quad)), SLOT(onBoardClicked(Quad)));
     connect(&game, SIGNAL(update_msg_label(QString)), SLOT(onGameUpdateMsgLabel(QString)));
     connect(&tcp_client, SIGNAL(report(QString)), SLOT(onTcpClientReport(QString)));
     connect(&tcp_client, SIGNAL(receivedData(QByteArray)), SLOT(onTcpClientReceivedData(QByteArray)));
@@ -26,15 +26,13 @@ ClientWindow::~ClientWindow()
     delete ui;
 }
 
-void ClientWindow::set_player(bool x)
-{
-    piece_x = x;
-}
-
 void ClientWindow::on_button_start_clicked()
 {
     if (ui->radio_multi_player->isChecked())
     {
+        board_widget->clear();
+        board_widget->setOverlayMessage("Waiting for opponent...");
+
         Message msg(TARGET_GAME, FUNCTION_GAME_START);
         tcp_client.sendMessage(msg);
     }
@@ -66,6 +64,9 @@ void ClientWindow::on_button_connect_clicked()
 void ClientWindow::on_button_close_connection_clicked()
 {
     tcp_client.disconnectFromServer();
+
+    board_widget->clear();
+    board_widget->setActive(false);
 }
 
 void ClientWindow::on_radio_one_player_clicked()
@@ -108,17 +109,26 @@ void ClientWindow::processMessage(Message msg)
 {
     if (msg.getFunction() == FUNCTION_GAME_INIT)
     {
-
+        board_widget->clear();
+        board_widget->setActive(true);
     }
     else if (msg.getFunction() == FUNCTION_GAME_UPDATE)
     {
         Board board;
         board.set_board_from_string(msg.getBoardStr());
-        board_widget->set_board(board);
+        board_widget->setBoard(board);
     }
     else if (msg.getFunction() == FUNCTION_GAME_END)
     {
+        PieceType winnerPiece = msg.getPieceType();
+        board_widget->setActive(false);
+        board_widget->setWinner(winnerPiece);
 
+        QString msg;
+        if      (winnerPiece == PIECE_TYPE_X) msg = "X Wins!";
+        else if (winnerPiece == PIECE_TYPE_O) msg = "O Wins!";
+        else                                  msg = "Tie!";
+        board_widget->setOverlayMessage(msg);
     }
 
 }

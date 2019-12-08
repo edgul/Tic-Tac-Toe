@@ -11,7 +11,7 @@
 Game::Game()
 {
     turn_x = true;
-    active = false;
+    active_ = false;
     singlePlayer = true;
 }
 
@@ -22,7 +22,7 @@ void Game::init()
 
     QString msg = MSG_TURN_X;
     emit update_msg_label(msg);
-    active = true;
+    active_ = true;
 }
 
 void Game::startMultiplayer(Player p1, Player p2)
@@ -41,9 +41,7 @@ void Game::startMultiplayer(Player p1, Player p2)
     }
 
     init();
-
     singlePlayer = false;
-
     emit gameInit(playerX, playerO);
 }
 
@@ -57,7 +55,12 @@ void Game::startSinglePlayer(Difficulty difficulty)
     singlePlayer = true;
 }
 
-void Game::turn_cleanup()
+bool Game::getActive()
+{
+    return active_;
+}
+
+void Game::checkForGameOver()
 {
     bool game_over = false;
 
@@ -91,9 +94,7 @@ void Game::turn_cleanup()
     if (game_over)
     {
         // stop taking user input when the game is over
-        active = false;
-
-        emit gameStateUpdated(playerX, playerO, board);
+        active_ = false;
         emit gameEnded(winner);
     }
     else
@@ -106,22 +107,20 @@ void Game::turn_cleanup()
         emit update_msg_label(msg);
 
         // disable user input for one player game
-        active = true;
-        if (singlePlayer)
-        {
-            if (!turn_x)
-            {
-                active = false;
-            }
-        }
-
-        emit gameStateUpdated(playerX, playerO, board);
+//        active = true;
+//        if (singlePlayer)
+//        {
+//            if (!turn_x)
+//            {
+//                active = false;
+//            }
+//        }
     }
 }
 
 void Game::placePiece(Player player, Quad quad)
 {
-    if (active) // accepting input from user
+    if (active_) // accepting input from user
     {
         // TODO: simplify logic
         bool proceed = false;
@@ -142,13 +141,7 @@ void Game::placePiece(Player player, Quad quad)
                 // Place piece
                 QString piece = get_turn_piece();
                 board.place(piece, quad);
-
-                turn_cleanup();
-
-                if (singlePlayer && !turn_x)
-                {
-                    ai_goes();
-                }
+                emit gameStateUpdated(playerX, playerO, board);
             }
         }
     }
@@ -186,7 +179,7 @@ void Game::ai_goes()
 
     board.place(ai_piece, ai_move);
 
-    turn_cleanup();
+    checkForGameOver();
 }
 
 QString Game::get_turn_piece()

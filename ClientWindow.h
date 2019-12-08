@@ -9,6 +9,8 @@ namespace Ui {
 class ClientWindow;
 }
 
+// TODO: sometimes connection and reporting gets out of sync
+
 class ClientWindow : public QMainWindow
 {
     Q_OBJECT
@@ -16,8 +18,6 @@ class ClientWindow : public QMainWindow
 public:
     explicit ClientWindow(QWidget *parent = 0);
     ~ClientWindow();
-
-    void set_player(bool x);
 
 private slots:
     void on_button_start_clicked();
@@ -33,14 +33,10 @@ private slots:
 
 private:
     Ui::ClientWindow *ui;
-
-    bool piece_x;
-    Game game;
     BoardWidget * board_widget;
+    Game game;
 
     MyTCPClient tcp_client;
-    QByteArray left_overs;
-
     QString messageStream;
 
     void report(QString str);

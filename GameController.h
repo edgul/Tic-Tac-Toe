@@ -19,6 +19,7 @@ private slots:
     void onGameInit(Player p1, Player p2);
     void onGameStateUpdated(Player p1, Player p2, Board board);
     void onGameEnded(Player winningPlayer);
+    void onUserDisconnected(int user);
 
 private:
     MyTCPServer tcp_server;

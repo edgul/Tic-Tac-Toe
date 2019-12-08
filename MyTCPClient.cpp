@@ -49,7 +49,8 @@ void MyTCPClient::disconnectFromServer()
         return;
     }
 
-    socket.disconnect();
+    qDebug() << "Client disconnecting";
+    socket.disconnectFromHost();
 }
 
 void MyTCPClient::onSocketConnected()

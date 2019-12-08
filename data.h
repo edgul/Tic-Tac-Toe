@@ -10,6 +10,19 @@ enum Target
     TARGET_GAME
 };
 
+/*
+client:
+*******
+GAME_START
+GAME_PLACE Quad
+GAME_QUIT PieceType
+
+server:
+*******
+GAME_INIT PieceType
+GAME_UPDATE Board
+GAME_END PieceType
+*/
 enum Function
 {
     FUNCTION_NONE,
