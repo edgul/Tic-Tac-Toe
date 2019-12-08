@@ -39,8 +39,8 @@ private:
     Player playerO;
 
     bool turn_x;
-    bool active_;        // TODO: game state
-    bool singlePlayer;  // TODO: fix single player
+    bool active_;       // TODO: game state
+    bool singlePlayer;
 
     void init();
     void ai_goes();

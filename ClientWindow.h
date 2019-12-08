@@ -9,8 +9,6 @@ namespace Ui {
 class ClientWindow;
 }
 
-// TODO: sometimes connection and reporting gets out of sync
-
 class ClientWindow : public QMainWindow
 {
     Q_OBJECT
