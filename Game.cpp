@@ -6,6 +6,7 @@
 #define MSG_WIN_O  "O wins!"
 #define MSG_TIE    "Tie game."
 
+#include <QDebug>
 
 Game::Game()
 {
@@ -92,6 +93,7 @@ void Game::turn_cleanup()
         // stop taking user input when the game is over
         active = false;
 
+        emit gameStateUpdated(playerX, playerO, board);
         emit gameEnded(winner);
     }
     else
@@ -123,13 +125,14 @@ void Game::placePiece(Player player, Quad quad)
     {
         // TODO: simplify logic
         bool proceed = false;
+
         if (player.getPieceType() == PIECE_TYPE_X)
         {
             if (turn_x) proceed = true;
         }
         else
         {
-            if (turn_x) proceed = true;
+            if (!turn_x) proceed = true;
         }
 
         if (proceed)

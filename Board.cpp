@@ -1,5 +1,6 @@
 #include "Board.h"
 
+#include <QDebug>
 
 Board::Board()
 {
@@ -206,7 +207,11 @@ QString Board::toString()
 
 void Board::set_board_from_string(QString b_string)
 {
-    QList<QString> list = b_string.split("");
+    QList<QString> list;
+    foreach (QString s, b_string)
+    {
+        list.append(s);
+    }
 
     board = list;
 }

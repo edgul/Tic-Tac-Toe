@@ -19,17 +19,15 @@ void GameController::onReceivedData(QString data, int user)
     int firstDelimiter;
     while ((firstDelimiter = messageStream.indexOf(DELIMITER)) != -1)
     {
-        QString message = messageStream.mid(0, firstDelimiter-1);
-        messageStream = messageStream.remove(0, firstDelimiter+2);
-        qDebug() << "Received : " << message;
-
+        QString message = messageStream.mid(0, firstDelimiter);
+        messageStream = messageStream.remove(0, firstDelimiter+4);
         processMessage(message, user);
     }
 }
 
 void GameController::onGameInit(Player p1, Player p2)
 {
-    Message msg(TARGET_GAME, FUNCTION_GAME_INIT, Board().toString());
+    Message msg(TARGET_GAME, FUNCTION_GAME_INIT, p1.getPieceType());
     tcp_server.sendMessage(msg, p1.getUser());
     tcp_server.sendMessage(msg, p2.getUser());
 }
@@ -62,12 +60,10 @@ void GameController::processMessage(QString messageStr, int user)
     }
     else if (msg.getTarget() == TARGET_CONNECTION)
     {
-        qDebug() << "Received Target CONNECTION";
         handleConnectionMessage(msg);
     }
     else
     {
-        qDebug() << "Received Target GAME";
         handleGameMessage(msg, user);
     }
 }
@@ -102,7 +98,6 @@ void GameController::handleGameMessage(Message msg, int user)
 
             Player newPlayer(user, newPieceType);
             players.append(newPlayer);
-
             game.startMultiplayer(*otherPlayer, newPlayer);
         }
         else

@@ -37,7 +37,6 @@ void MyTCPServer::sendMessage(Message msg, int user)
     {
         QTcpSocket *socket = users[user];
         QString toSend = msg.toString() + QString(DELIMITER);
-        qDebug() << "Server sending: " << toSend;
         QByteArray data = toSend.toLatin1();
         socket->write(data);
     }
@@ -75,8 +74,6 @@ void MyTCPServer::onReadyRead()
 {
     QTcpSocket * socket = (QTcpSocket *) sender();
     QByteArray data = socket->readAll();
-
-    unpack_data(data);
 
     QByteArray terminate_string = "Close";
     if (data.contains(terminate_string))
@@ -145,8 +142,8 @@ void MyTCPServer::onSendTimerTick()
         QString i_str = QString::number(i);
         send_hello_world(socket, "hello world " + i_str);
 
-        QString msg = "SERVER: Wrote to socket " + QString::number(i) + "\n";
-        std::cout << msg.toLatin1().data();
+        // QString msg = "SERVER: Wrote to socket " + QString::number(i) + "\n";
+        // std::cout << msg.toLatin1().data();
 
     }
 }

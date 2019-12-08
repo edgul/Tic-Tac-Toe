@@ -34,7 +34,8 @@ void MyTCPClient::sendMessage(Message msg)
         return;
     }
 
-    emit report("Client Sending Message: " + msgToSend);
+    // qDebug() << "Client sending message: " << msgToSend;
+    // emit report("Client Sending Message: " + msgToSend);
 
     QByteArray data = msgToSend.toLatin1();
     socket.write(data);
@@ -44,7 +45,7 @@ void MyTCPClient::send_message(QString str)
 {
     // TODO: delete this once Connection is handled by Message class
     QString string_to_send = str + QString(DELIMITER);
-    emit report("Client Sending Message: " + string_to_send);
+    // emit report("Client Sending Message: " + string_to_send);
     QByteArray data = string_to_send.toLatin1();
     socket.write(data);
 }

@@ -35,7 +35,6 @@ private:
     Ui::ClientWindow *ui;
 
     bool piece_x;
-    bool turn_x;
     Game game;
     BoardWidget * board_widget;
 
@@ -45,7 +44,6 @@ private:
     QString messageStream;
 
     void report(QString str);
-    void update_game_state(Board board);
     void processMessage(Message msg);
 
 };

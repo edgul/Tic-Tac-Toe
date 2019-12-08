@@ -38,7 +38,7 @@ private slots:
 
 private:
     QTcpSocket socket;
-    TcpState state; // TODO: switch to idiomatic QAbstractSocket listening
+    TcpState state; // TODO: idiomatic QAbstractSocket listening
     QTimer flush_timer;
 
 };

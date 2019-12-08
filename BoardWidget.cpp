@@ -135,8 +135,6 @@ bool BoardWidget::is_right(QPoint p)
 
 void BoardWidget::mousePressEvent(QMouseEvent * event)
 {
-    qDebug() << "BoardWidget::mousePressEvent";
-
     QPoint p(event->x(), event->y());
     Quad quad = quadrant(p);
     emit board_clicked(quad);
@@ -158,9 +156,14 @@ void BoardWidget::paintEvent(QPaintEvent *event)
     QLine horizontal_one_third(0, one_third_y, width(), one_third_y);
     QLine horizontal_two_thirds(0, two_thirds_y, width(), two_thirds_y);
 
+    QString winner = board.winner();
+    bool winOrTie = winner != "" || board.full();
+
+    if (winOrTie) painter.setOpacity(.25);
+
+    // draw separators
     painter.drawLine(vertical_one_third);
     painter.drawLine(vertical_two_thirds);
-
     painter.drawLine(horizontal_one_third);
     painter.drawLine(horizontal_two_thirds);
 
@@ -168,13 +171,33 @@ void BoardWidget::paintEvent(QPaintEvent *event)
     font.setPointSize(14);
     painter.setFont(font);
 
+    // draw letters
     for (int quad_index = 0; quad_index < board.size() ; quad_index++)
     {
         QString letter = board.piece_at(quad_index);
         if (letter == EMPTY_CELL) letter = "";
-
         QPoint p = point_at_quad((Quad) quad_index);
         painter.drawText(p, letter);
+    }
+
+    if (winOrTie)
+    {
+        painter.setOpacity(1);
+        QString winMessage;
+        if (winner == PLAYER_O)
+        {
+            winMessage = "O wins!";
+        }
+        else if (winner == PLAYER_X)
+        {
+            winMessage = "X wins!";
+        }
+        else
+        {
+            winMessage = "Tie!";
+        }
+        painter.setPen(Qt::red);
+        painter.drawText(QPoint(width()/2, height()/2), winMessage);
     }
 
     QWidget::paintEvent(event);

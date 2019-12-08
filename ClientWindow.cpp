@@ -11,6 +11,8 @@ ClientWindow::ClientWindow(QWidget *parent) :
 
     board_widget = ui->board_widget;
 
+    ui->radio_multi_player->setChecked(true);
+
     connect(board_widget, SIGNAL(board_clicked(Quad)), SLOT(onBoardClicked(Quad)));
     connect(&game, SIGNAL(update_msg_label(QString)), SLOT(onGameUpdateMsgLabel(QString)));
     connect(&tcp_client, SIGNAL(report(QString)), SLOT(onTcpClientReport(QString)));
@@ -76,11 +78,8 @@ void ClientWindow::on_radio_multi_player_clicked()
 
 void ClientWindow::onBoardClicked(Quad quad)
 {
-    if (turn_x == piece_x)
-    {
-        Message msg(TARGET_GAME, FUNCTION_GAME_PLACE, quad);
-        tcp_client.sendMessage(msg);
-    }
+    Message msg(TARGET_GAME, FUNCTION_GAME_PLACE, quad);
+    tcp_client.sendMessage(msg);
 }
 
 void ClientWindow::onTcpClientReceivedData(QByteArray data)
@@ -90,9 +89,8 @@ void ClientWindow::onTcpClientReceivedData(QByteArray data)
     int firstDelimiter;
     while ((firstDelimiter = messageStream.indexOf(DELIMITER)) != -1)
     {
-        QString message = messageStream.mid(0, firstDelimiter-1);
-        messageStream = messageStream.remove(0, firstDelimiter+2);
-        qDebug() << "Received : " << message;
+        QString message = messageStream.mid(0, firstDelimiter);
+        messageStream = messageStream.remove(0, firstDelimiter+4);
 
         Message msg(message);
         processMessage(msg);
@@ -104,25 +102,26 @@ void ClientWindow::report(QString str)
     ui->output->appendPlainText(str);
 }
 
-void ClientWindow::update_game_state(Board board)
-{
-    turn_x = !turn_x;
-    board_widget->set_board(board);
-}
-
 void ClientWindow::processMessage(Message msg)
 {
     if (msg.getFunction() == FUNCTION_HANDSHAKE_RESPONSE)
     {
         qDebug() << "TcpClient::Handshake Response -- undetermined result";
+    }
+    else if (msg.getFunction() == FUNCTION_GAME_INIT)
+    {
 
     }
-    else if (msg.getFunction() == FUNCTION_UPDATE_BOARD)
+    else if (msg.getFunction() == FUNCTION_GAME_UPDATE)
     {
         // TODO: improve this
         Board board;
         board.set_board_from_string(msg.getBoardStr());
-        update_game_state(board);
+        board_widget->set_board(board);
+    }
+    else if (msg.getFunction() == FUNCTION_GAME_END)
+    {
+
     }
     else if (msg.getFunction() == FUNCTION_HELLO_WORLD) // o cutoff
     {

@@ -80,6 +80,10 @@ void Message::setMessage(QString rawStr)
         {
             pieceType = static_cast<PieceType>(tokens[2].toInt());
         }
+        else if (function == FUNCTION_GAME_INIT)
+        {
+            pieceType = static_cast<PieceType>(tokens[2].toInt());
+        }
         else if (function == FUNCTION_GAME_PLACE)
         {
             quad = static_cast<Quad>(tokens[2].toInt());
@@ -138,6 +142,10 @@ QString Message::toString()
         result += board;
     }
     else if (function == FUNCTION_GAME_END)
+    {
+        result += QString::number(static_cast<int>(pieceType));
+    }
+    else if (function == FUNCTION_GAME_INIT)
     {
         result += QString::number(static_cast<int>(pieceType));
     }
