@@ -49,6 +49,9 @@ void GameController::onGameEnded(Player winningPlayer)
 
     tcp_server.sendMessage(msg, p1.getUser());
     tcp_server.sendMessage(msg, p2.getUser());
+
+    players.removeOne(p1);
+    players.removeOne(p2);
 }
 
 void GameController::onUserDisconnected(int user)

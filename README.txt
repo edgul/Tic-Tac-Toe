@@ -5,7 +5,6 @@ A tcp client-server tic-tac-toe game written in C++ and Qt.
 
 Bugs:
 * Fix single player mode
-* Possible to get into state where there are two players of same piece
 * sometimes connection and reporting gets out of sync
 
 Improvements:
