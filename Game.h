@@ -23,6 +23,7 @@ public:
 
     Player getPlayer1();
     Player getPlayer2();
+    Player currentTurnPlayer();
 
 signals:
     void update_msg_label(QString msg);
@@ -39,7 +40,7 @@ private:
     Player playerO;
 
     bool turn_x;
-    bool active_;       // TODO: game state
+    bool active_;
     bool singlePlayer;
 
     void init();

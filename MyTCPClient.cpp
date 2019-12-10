@@ -5,7 +5,6 @@
 
 MyTCPClient::MyTCPClient()
 {
-    state = DISCONNECTED;
     connect(&socket, SIGNAL(connected()), SLOT(onSocketConnected()));
     connect(&socket, SIGNAL(readyRead()), SLOT(onReadyRead()));
     connect(&socket, SIGNAL(disconnected()), SLOT(onSocketDisconnected()));
@@ -17,10 +16,9 @@ MyTCPClient::MyTCPClient()
 
 void MyTCPClient::connectToServer()
 {
-    if (state == DISCONNECTED)
+    if (socket.state() == QAbstractSocket::UnconnectedState)
     {
         socket.connectToHost(HOST_ADDRESS, HOST_PORT);
-        state = CONNECTING;
     }
 }
 
@@ -28,7 +26,7 @@ void MyTCPClient::sendMessage(Message msg)
 {
     QString msgToSend = msg.toString() + QString(DELIMITER);
 
-    if (state != CONNECTED)
+    if (socket.state() != QAbstractSocket::ConnectedState)
     {
         emit report("Client ERR: Cannot send; Not connected\n");
         return;
@@ -43,7 +41,8 @@ void MyTCPClient::sendMessage(Message msg)
 
 void MyTCPClient::disconnectFromServer()
 {
-    if (state == DISCONNECTED)
+    qDebug() << "state: " << socket.state();
+    if (socket.state() != QAbstractSocket::ConnectedState)
     {
         emit report("Client ERR: No connection to close.\n");
         return;
@@ -55,22 +54,17 @@ void MyTCPClient::disconnectFromServer()
 
 void MyTCPClient::onSocketConnected()
 {
-    state = CONNECTED;
     onReadyRead();
 }
 
 void MyTCPClient::onSocketDisconnected()
 {
-    state = DISCONNECTED;
     emit report("Connection Closed.\n");
 }
 
 void MyTCPClient::onReadyRead()
 {
-    if (state == CONNECTED)
-    {
-        emit receivedData(socket.readAll());
-    }
+    emit receivedData(socket.readAll());
 }
 
 void MyTCPClient::onFlushTimerTick()

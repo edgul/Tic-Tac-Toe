@@ -172,6 +172,18 @@ Player Game::getPlayer2()
     return playerO;
 }
 
+Player Game::currentTurnPlayer()
+{
+    if (turn_x)
+    {
+        return playerX;
+    }
+    else
+    {
+        return playerO;
+    }
+}
+
 void Game::ai_goes()
 {
     QString ai_piece = ai.get_piece();

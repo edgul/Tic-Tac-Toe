@@ -8,13 +8,6 @@
 #include "Board.h"
 #include "Message.h"
 
-enum TcpState
-{
-    DISCONNECTED,
-    CONNECTING,
-    CONNECTED
-};
-
 class MyTCPClient : public QObject
 {
     Q_OBJECT
@@ -37,7 +30,6 @@ private slots:
 
 private:
     QTcpSocket socket;
-    TcpState state; // TODO: idiomatic QAbstractSocket listening
     QTimer flush_timer;
 
 };

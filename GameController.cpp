@@ -91,32 +91,35 @@ void GameController::handleGameMessage(Message msg, int user)
 {
     if (msg.getFunction() == FUNCTION_GAME_START)
     {
-        // look for another to play with
-        Player* otherPlayer = nullptr;
-        for (int i = 0; i < players.length(); i++)
-        {
-            Player &player = players[i];
-            if (player.getPieceType() == PIECE_TYPE_NONE)
-            {
-                otherPlayer = &player;
-            }
-        }
-
-        // Add player to list
         PieceType newPieceType = PIECE_TYPE_NONE;
-        if (otherPlayer)
-        {
-            otherPlayer->setPlayerType(PIECE_TYPE_X);
-            newPieceType = PIECE_TYPE_O;
+        Player newPlayer(user, newPieceType);
 
-            Player newPlayer(user, newPieceType);
-            players.append(newPlayer);
-            game.startMultiplayer(*otherPlayer, newPlayer);
-        }
-        else
+        if (!players.contains(newPlayer)) // player can only play 1 game at a time
         {
-            Player newPlayer(user, newPieceType);
-            players.append(newPlayer);
+            // look for another to play with
+            Player* otherPlayer = nullptr;
+            for (int i = 0; i < players.length(); i++)
+            {
+                Player &player = players[i];
+                if (player.getPieceType() == PIECE_TYPE_NONE)
+                {
+                    otherPlayer = &player;
+                }
+            }
+
+            // Add player to list
+            if (otherPlayer)
+            {
+                otherPlayer->setPlayerType(PIECE_TYPE_X);
+                newPieceType = PIECE_TYPE_O;
+
+                players.append(newPlayer);
+                game.startMultiplayer(*otherPlayer, newPlayer);
+            }
+            else
+            {
+                players.append(newPlayer);
+            }
         }
     }
     else if (msg.getFunction() == FUNCTION_GAME_QUIT)
@@ -126,10 +129,13 @@ void GameController::handleGameMessage(Message msg, int user)
     }
     else if (msg.getFunction() == FUNCTION_GAME_PLACE)
     {
-        Player actingPlayer = players[players.indexOf(Player(user))];
-        game.placePiece(actingPlayer, msg.getQuad());
-        game.checkForGameOver();
-
+        Player sendingPlayer(user);
+        if (game.getActive() && sendingPlayer == game.currentTurnPlayer())
+        {
+            Player actingPlayer = players[players.indexOf(sendingPlayer)];
+            game.placePiece(actingPlayer, msg.getQuad());
+            game.checkForGameOver();
+        }
     }
 }
 
