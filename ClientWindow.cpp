@@ -17,6 +17,10 @@ ClientWindow::ClientWindow(QWidget *parent) :
 
     connect(board_widget, SIGNAL(boardClicked(Quad)), SLOT(onBoardClicked(Quad)));
     connect(&game, SIGNAL(update_msg_label(QString)), SLOT(onGameUpdateMsgLabel(QString)));
+    connect(&game, SIGNAL(gameInit(Player,Player)), SLOT(onGameInit(Player,Player)));
+    connect(&game, SIGNAL(gameStateUpdated(Player, Player, Board)), SLOT(onGameStateUpdated(Player, Player, Board)));
+    connect(&game, SIGNAL(gameEnded(Player)), SLOT(onGameEnded(Player)));
+
     connect(&tcp_client, SIGNAL(report(QString)), SLOT(onTcpClientReport(QString)));
     connect(&tcp_client, SIGNAL(receivedData(QByteArray)), SLOT(onTcpClientReceivedData(QByteArray)));
 }
@@ -41,6 +45,9 @@ void ClientWindow::on_button_start_clicked()
         Difficulty difficulty = DIFFICULTY_EASY;
         if (ui->radio_difficulty_medium->isChecked()) difficulty = DIFFICULTY_MEDIUM;
         if (ui->radio_difficulty_hard->isChecked()) difficulty = DIFFICULTY_HARD;
+
+        board_widget->clear();
+        board_widget->setOverlayMessage("");
 
         game.startSinglePlayer(difficulty);
     }
@@ -81,8 +88,49 @@ void ClientWindow::on_radio_multi_player_clicked()
 
 void ClientWindow::onBoardClicked(Quad quad)
 {
-    Message msg(TARGET_GAME, FUNCTION_GAME_PLACE, quad);
-    tcp_client.sendMessage(msg);
+    if (game.getActive())
+    {
+        Player player(0, PieceType::PIECE_TYPE_X);
+        game.placePiece(player, quad);
+        game.checkForGameOver();
+        if (game.getActive())
+        {
+            game.ai_goes();
+        }
+    }
+    else if (tcp_client.isConnected())
+    {
+        Message msg(TARGET_GAME, FUNCTION_GAME_PLACE, quad);
+        tcp_client.sendMessage(msg);
+    }
+}
+
+void ClientWindow::onGameInit(Player p1, Player p2)
+{
+    if (game.isSinglePlayer())
+    {
+        board_widget->setActive(true);
+    }
+}
+
+void ClientWindow::onGameStateUpdated(Player player1, Player player2, Board board)
+{
+    if (game.isSinglePlayer())
+    {
+        board_widget->setBoard(board);
+    }
+}
+
+void ClientWindow::onGameEnded(Player winner)
+{
+    if (game.isSinglePlayer())
+    {
+        QString string = "Tie game!";
+        if (winner.getPieceType() == PieceType::PIECE_TYPE_O) string = "O Wins!";
+        if (winner.getPieceType() == PieceType::PIECE_TYPE_X) string = "X Wins!";
+        board_widget->setOverlayMessage(string);
+        board_widget->setActive(false);
+    }
 }
 
 void ClientWindow::onTcpClientReceivedData(QByteArray data)

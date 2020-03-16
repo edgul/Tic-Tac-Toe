@@ -14,6 +14,11 @@ MyTCPClient::MyTCPClient()
     flush_timer.start();
 }
 
+bool MyTCPClient::isConnected()
+{
+    return socket.state() == QAbstractSocket::ConnectedState;
+}
+
 void MyTCPClient::connectToServer()
 {
     if (socket.state() == QAbstractSocket::UnconnectedState)

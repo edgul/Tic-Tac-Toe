@@ -60,7 +60,7 @@ Quad AI::get_dumbass_move(Board board)
 
 Quad AI::highest_productivity_move(Board board)
 {
-    QList<Quad> empty_quads = board.quads_with_piece("");
+    QList<Quad> empty_quads = board.quads_with_piece(EMPTY_CELL);
 
     Quad highest_p_quad = empty_quads[0];
     int highest_productivity = board.productivity(QUAD_TOP_LEFT, piece_type);

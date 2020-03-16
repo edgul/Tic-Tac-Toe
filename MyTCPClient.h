@@ -14,6 +14,7 @@ class MyTCPClient : public QObject
 public:
     MyTCPClient();
 
+    bool isConnected();
     void connectToServer();
     void disconnectFromServer();
     void sendMessage(Message msg);

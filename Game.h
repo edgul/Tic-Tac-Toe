@@ -13,6 +13,7 @@ class Game : public QObject
 public:
     Game();
 
+    bool isSinglePlayer();
     void startMultiplayer(Player p1, Player p2);
     void startSinglePlayer(Difficulty difficulty);
 
@@ -24,6 +25,8 @@ public:
     Player getPlayer1();
     Player getPlayer2();
     Player currentTurnPlayer();
+
+    void ai_goes();
 
 signals:
     void update_msg_label(QString msg);
@@ -44,7 +47,6 @@ private:
     bool singlePlayer;
 
     void init();
-    void ai_goes();
     QString get_turn_piece();
 
 };

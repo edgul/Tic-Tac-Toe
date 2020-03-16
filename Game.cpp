@@ -15,6 +15,11 @@ Game::Game()
     singlePlayer = true;
 }
 
+bool Game::isSinglePlayer()
+{
+    return singlePlayer;
+}
+
 void Game::init()
 {
     board.clear();
@@ -52,7 +57,11 @@ void Game::startSinglePlayer(Difficulty difficulty)
     ai.set_piece_type(PLAYER_O);
     ai.set_difficulty(difficulty);
 
+    playerO.setPlayerType(PIECE_TYPE_O);
+    playerX.setPlayerType(PIECE_TYPE_X);
+
     singlePlayer = true;
+    emit gameInit(playerX, playerO);
 }
 
 bool Game::getActive()
@@ -104,7 +113,7 @@ void Game::checkForGameOver()
         // update label
         QString msg = MSG_TURN_X;
         if (!turn_x) msg = MSG_TURN_O;
-        emit update_msg_label(msg);
+        emit update_msg_label(msg); 
 
         // disable user input for one player game
 //        active = true;
@@ -189,8 +198,12 @@ void Game::ai_goes()
     QString ai_piece = ai.get_piece();
     Quad ai_move = ai.get_move(board);
 
-    board.place(ai_piece, ai_move);
+    // temporary adapter
+    PieceType ai_piece_type = PieceType::PIECE_TYPE_O;
+    if (ai_piece == PLAYER_X) ai_piece_type = PieceType::PIECE_TYPE_X;
 
+    Player p(0, ai_piece_type);
+    placePiece(p, ai_move);
     checkForGameOver();
 }
 
