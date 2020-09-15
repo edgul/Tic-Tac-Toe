@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "Game.h"
 #include "MyTCPClient.h"
+#include "widgets/BoardWidget.h"
 
 namespace Ui {
 class ClientWindow;

@@ -1,7 +1,6 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "BoardWidget.h"
 #include "AI.h"
 #include "Board.h"
 #include "Player.h"

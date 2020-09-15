@@ -1,8 +1,10 @@
 #include "ClientWindow.h"
 #include <QApplication>
 
-#include "MainWindowManager.h"
+// #include "MainWindowManager.h"
 #include "GameController.h"
+
+#include "ClientMainWindow.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,13 +12,8 @@ int main(int argc, char *argv[])
 
     GameController gameController;
 
-    ClientWindow w;
-    w.show();
-    ClientWindow w2;
-    w2.show();
-
-    // MainWindowManager wm;
-    // wm.show();
+    ClientMainWindow cmw;
+    cmw.show();
 
     return a.exec();
 }

@@ -323,7 +323,7 @@
   <customwidget>
    <class>BoardWidget</class>
    <extends>QWidget</extends>
-   <header>BoardWidget.h</header>
+   <header>widgets/BoardWidget.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

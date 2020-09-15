@@ -9,14 +9,15 @@ Instructions to play:
 3. Start game (Multi-player: you may have to wait for your opponent)
 
 Bugs:
-* Fix single player mode
+* No valid-move checking in single player mode
 
 Improvements:
-* Separate client-server threads/projects
+* Separate client-server processes and projects
 * Add feedback for live connection and game states
 * add game metrics
 * add perfect AI
 * Add unit tests
 
-* Multiple screens
-* Improve message structure
+* Multiple screens (port client window to client main window)
+* Improve message/POD structures
+* Rename MyTCPClient/Server (and probably compose over inherit)
