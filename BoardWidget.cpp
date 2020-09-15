@@ -175,40 +175,37 @@ void BoardWidget::paintEvent(QPaintEvent *event)
     QPainter painter;
     painter.begin(this);
 
-    int one_third_x  =     width()  / 3;
-    int two_thirds_x = 2 * width()  / 3;
-    int one_third_y  =     height() / 3;
-    int two_thirds_y = 2 * height() / 3;
-
-    QLine vertical_one_third(one_third_x, 0, one_third_x, height());
-    QLine vertical_two_thirds(two_thirds_x, 0 , two_thirds_x, height());
-    QLine horizontal_one_third(0, one_third_y, width(), one_third_y);
-    QLine horizontal_two_thirds(0, two_thirds_y, width(), two_thirds_y);
-
     if (!active_) painter.setOpacity(.25);
 
-    // separators
-    painter.drawLine(vertical_one_third);
-    painter.drawLine(vertical_two_thirds);
-    painter.drawLine(horizontal_one_third);
-    painter.drawLine(horizontal_two_thirds);
-
-    QFont font = QFont();
-    font.setPointSize(14);
-    painter.setFont(font);
+    // background/board
+    QPixmap background(":/images/board.png");
+    background = background.scaled(width(), height(),Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    painter.drawPixmap(0,0, width(), height(), background);
 
     // pieces
     for (int quad_index = 0; quad_index < board.size() ; quad_index++)
     {
         QString letter = board.piece_at(quad_index);
-        if (letter == EMPTY_CELL) letter = "";
-        QPoint p = point_at_quad((Quad) quad_index);
-        painter.drawText(p, letter);
+        if (letter != EMPTY_CELL)
+        {
+            QString png = ":/images/o.png";
+            if (letter == PLAYER_X) png = ":/images/x.png";
+
+            int pieceWidth = 40;
+            int pieceHeight = 40;
+            QPoint p = point_at_quad((Quad) quad_index);
+            QPixmap piecePixmap(png);
+            piecePixmap = piecePixmap.scaled(pieceWidth, pieceHeight,Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+            painter.drawPixmap(p.x()-pieceWidth/2, p.y()-pieceHeight/2, pieceWidth, pieceHeight, piecePixmap);
+        }
     }
 
     // game over message
     if (overlayMessage_ != "")
     {
+        QFont font = QFont();
+        font.setPointSize(14);
+        painter.setFont(font);
         painter.setOpacity(1);
         painter.setPen(Qt::red);
         painter.drawText(QPoint(width()/2, height()/2), overlayMessage_);

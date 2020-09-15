@@ -61,3 +61,6 @@ FORMS    += \
 
 DISTFILES += \
     README.txt
+
+RESOURCES += \
+    images.qrc

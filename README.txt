@@ -15,8 +15,8 @@ Improvements:
 * Separate client-server threads/projects
 * Add feedback for live connection and game states
 * add game metrics
-* improve graphics
 * add perfect AI
 * Add unit tests
 
-
+* Multiple screens
+* Improve message structure
