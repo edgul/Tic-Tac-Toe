@@ -22,34 +22,53 @@ public:
     ~BoardWidget();
 
     void clear();
+    PieceType getPiece(Cell cell);
+    void setPiece(Cell cell, PieceType piece);
+    SimpleBoard getBoard();
+    bool gameOver();
+
+    PieceType winner();
     void setActive(bool active);
-    void setBoard(Board new_board);
-    void setWinner(PieceType pieceType);
-    void setOverlayMessage(QString overlayMsg);
+
+    // TODO: remove
+    void setOverlayMessage(const QString text) {}
+    void setBoard(Board board) {}
+    void setWinner(PieceType piece) {}
 
 signals:
-    void boardClicked(Quad quad);
+    void boardClicked(Cell quad);
+
+protected:
+    void mousePressEvent(QMouseEvent * event);
+    void paintEvent(QPaintEvent * event);
 
 private:
     Ui::BoardWidget *ui;
 
-    Quad quadrant(QPoint p);
-    QPoint point_at_quad(Quad quad);
+    bool active_;
+    QList<PieceType> board_ = { PIECE_TYPE_NONE, PIECE_TYPE_NONE, PIECE_TYPE_NONE,
+                                PIECE_TYPE_NONE, PIECE_TYPE_NONE, PIECE_TYPE_NONE,
+                                PIECE_TYPE_NONE, PIECE_TYPE_NONE, PIECE_TYPE_NONE
+                              };
 
+    Cell cellFromPoint(QPoint p);
+    QPoint pointFromCell(Cell quad);
+
+    // determine where point is
     bool is_top(QPoint p);
     bool is_bottom(QPoint p);
     bool is_left(QPoint p);
     bool is_right(QPoint p);
 
-    void mousePressEvent(QMouseEvent * event);
-    void paintEvent(QPaintEvent * event);
-
-    Board board;
-
-    PieceType winner_;
-    bool active_;
-    QString overlayMessage_;
-
+    PieceType containsOnly(QList<PieceType> cells);
+    QList<PieceType> top();
+    QList<PieceType> midH();
+    QList<PieceType> bot();
+    QList<PieceType> left();
+    QList<PieceType> midV();
+    QList<PieceType> right();
+    QList<PieceType> diagDec();
+    QList<PieceType> diagInc();
 };
 
 #endif // BOARDWIDGET_H

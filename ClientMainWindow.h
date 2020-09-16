@@ -2,6 +2,7 @@
 #define CLIENTMAINWINDOW_H
 
 #include <QMainWindow>
+#include "AI.h"
 #include "widgets/WelcomeWidget.h"
 #include "widgets/SelectDifficultyWidget.h"
 #include "widgets/GamePlayWidget.h"
@@ -26,7 +27,7 @@ private slots:
     void onSelectDifficultyWidgetClickedCancel();
 
     void onGamePlayWidgetClickedLeave();
-    void onGamePlayWidgetClickedValidQuad(Quad quad);
+    void onGamePlayWidgetClickedValidCell(Cell cell);
 
 private:
     Ui::ClientMainWindow *ui;
@@ -34,6 +35,10 @@ private:
     WelcomeWidget *welcomeWidget_;
     SelectDifficultyWidget *selectDifficultyWidget_;
     GamePlayWidget *gamePlayWidget_;
+    AI ai;
+
+    void endGame(PieceType winner);
+
 };
 
 #endif // CLIENTMAINWINDOW_H

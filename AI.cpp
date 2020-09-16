@@ -5,6 +5,18 @@ AI::AI()
     difficulty = DIFFICULTY_MEDIUM;
 }
 
+Cell AI::getMove(SimpleBoard simpleBoard, PieceType piece)
+{
+    for (int i = 0; i < simpleBoard.board.size(); i++)
+    {
+        if (simpleBoard.board[i] == PIECE_TYPE_NONE)
+        {
+            return (Cell) i;
+        }
+    }
+    return CELL_NONE;
+}
+
 Quad AI::get_best_move(Board board)
 {
     Quad best_move = board.available_win(piece_type);

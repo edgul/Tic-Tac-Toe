@@ -15,6 +15,9 @@ public:
     explicit SelectDifficultyWidget(QWidget *parent = nullptr);
     ~SelectDifficultyWidget();
 
+    enum AiDifficulty { AI_DIFFICULTY_EASY, AI_DIFFICULTY_MED, AI_DIFFICULTY_HARD, AI_DIFFICULTY_NONE };
+    AiDifficulty getDifficulty();
+
 private slots:
     void on_pushButtonOk_clicked();
     void on_pushButtonCancel_clicked();

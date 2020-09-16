@@ -18,6 +18,9 @@ class AI
 public:
     AI();
 
+    Cell getMove(SimpleBoard simpleBoard, PieceType piece);
+
+    // --
     Quad get_move(Board board);
 
     Quad get_dumbass_move(Board board);

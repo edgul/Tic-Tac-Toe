@@ -1,6 +1,7 @@
 #include "ClientMainWindow.h"
 #include "ui_ClientMainWindow.h"
 
+#include <QDebug>
 
 ClientMainWindow::ClientMainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -19,6 +20,7 @@ ClientMainWindow::ClientMainWindow(QWidget *parent) :
 
     gamePlayWidget_ = new GamePlayWidget(this);
     connect(gamePlayWidget_, SIGNAL(clickedLeave()), SLOT(onGamePlayWidgetClickedLeave()));
+    connect(gamePlayWidget_, SIGNAL(clickedValidCell(Cell)), SLOT(onGamePlayWidgetClickedValidCell(Cell)));
     gamePlayWidget_->hide();
 
     ui->centralwidget = welcomeWidget_;
@@ -42,10 +44,16 @@ void ClientMainWindow::onWelcomeWidgetClickedMultiPlayer()
     ui->centralwidget = gamePlayWidget_;
     ui->centralwidget->show();
 
+    // TODO
 }
 
 void ClientMainWindow::onSelectDifficultyWidgetClickedOk()
 {
+    gamePlayWidget_->clear();
+    gamePlayWidget_->setActive(true);
+    gamePlayWidget_->setTitle("Single Player Mode");
+    gamePlayWidget_->setSubtitle("Good luck!");
+
     ui->centralwidget->hide();
     ui->centralwidget = gamePlayWidget_;
     ui->centralwidget->show();
@@ -57,7 +65,6 @@ void ClientMainWindow::onSelectDifficultyWidgetClickedCancel()
     ui->centralwidget->hide();
     ui->centralwidget = welcomeWidget_;
     ui->centralwidget->show();
-
 }
 
 void ClientMainWindow::onGamePlayWidgetClickedLeave()
@@ -67,7 +74,38 @@ void ClientMainWindow::onGamePlayWidgetClickedLeave()
     ui->centralwidget->show();
 }
 
-void ClientMainWindow::onGamePlayWidgetClickedValidQuad(Quad quad)
+void ClientMainWindow::onGamePlayWidgetClickedValidCell(Cell cell)
 {
+    if (!gamePlayWidget_->gameOver())
+    {
+        if (cell != CELL_NONE)
+        {
+            gamePlayWidget_->setPiece(cell, PIECE_TYPE_X);
+            gamePlayWidget_->setActive(false);
 
+            if (gamePlayWidget_->gameOver())
+            {
+                endGame(gamePlayWidget_->winner());
+            }
+            else
+            {
+                Cell aiMove = ai.getMove(gamePlayWidget_->getBoard(), PIECE_TYPE_O);
+                gamePlayWidget_->setPiece(aiMove, PIECE_TYPE_O);
+
+                if (gamePlayWidget_->gameOver())
+                {
+                    endGame(gamePlayWidget_->winner());
+                }
+                gamePlayWidget_->setActive(true);
+            }
+        }
+    }
+}
+
+void ClientMainWindow::endGame(PieceType winner)
+{
+    QString winnerStr = "TIE!";
+    if (winner == PIECE_TYPE_O) winnerStr = "O wins";
+    if (winner == PIECE_TYPE_X) winnerStr = "X wins";
+    gamePlayWidget_->setSubtitle(winnerStr);
 }

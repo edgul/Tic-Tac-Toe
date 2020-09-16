@@ -16,13 +16,23 @@ public:
     explicit GamePlayWidget(QWidget *parent = nullptr);
     ~GamePlayWidget();
 
+    void clear();
+    PieceType getPiece(Cell quad);
+    void setPiece(Cell quad, PieceType piece);
+    PieceType winner();
+    bool gameOver();
+    void setActive(bool active);
+    SimpleBoard getBoard();
+
+    void setTitle(const QString text);
+    void setSubtitle(const QString text);
 signals:
     void clickedLeave();
-    void clickedValidQuad(Quad quad);
+    void clickedValidCell(Cell quad);
 
 private slots:
     void on_buttonLeave_clicked();
-    void onBoardWidgetBoardClicked(Quad quad);
+    void onBoardWidgetBoardClicked(Cell cell);
 
 private:
     Ui::GamePlayWidget *ui;

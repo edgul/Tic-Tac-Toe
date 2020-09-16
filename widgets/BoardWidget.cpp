@@ -13,9 +13,7 @@
 BoardWidget::BoardWidget(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::BoardWidget),
-    winner_(PIECE_TYPE_NONE),
-    active_(false),
-    overlayMessage_("")
+    active_(false)
 {
     ui->setupUi(this);
 
@@ -26,12 +24,74 @@ BoardWidget::~BoardWidget()
     delete ui;
 }
 
+PieceType BoardWidget::getPiece(Cell cell)
+{
+    if (cell == CELL_NONE)
+    {
+        qDebug() << "Cannot get piece from CELL_NONE";
+        Q_ASSERT(false);
+        return PIECE_TYPE_NONE;
+    }
+
+    return board_[(int) cell];
+}
+
+void BoardWidget::setPiece(Cell cell, PieceType piece)
+{
+    if (cell == CELL_NONE)
+    {
+        qDebug() << "Cannot set piece of CELL_NONE";
+        Q_ASSERT(false);
+        return;
+    }
+
+    board_[cell] = piece;
+    repaint();
+}
+
+SimpleBoard BoardWidget::getBoard()
+{
+    return SimpleBoard(board_);
+}
+
+bool BoardWidget::gameOver()
+{
+    return winner() != PIECE_TYPE_NONE || !board_.contains(PIECE_TYPE_NONE);
+}
+
 void BoardWidget::clear()
 {
-    board.clear();
-    winner_ = PIECE_TYPE_NONE;
-    overlayMessage_ = "";
+    for (int i = 0; i < NUM_CELLS; i++)
+    {
+        board_[i] = PIECE_TYPE_NONE;
+    }
+
     repaint();
+}
+
+PieceType BoardWidget::winner()
+{
+    QList<QList<PieceType>> cellsSet;
+    cellsSet.append(top());
+    cellsSet.append(midH());
+    cellsSet.append(bot());
+    cellsSet.append(left());
+    cellsSet.append(midV());
+    cellsSet.append(right());
+    cellsSet.append(diagInc());
+    cellsSet.append(diagDec());
+
+    foreach (QList<PieceType> cells, cellsSet)
+    {
+        PieceType piece = containsOnly(cells);
+        if (piece != PIECE_TYPE_NONE)
+        {
+            qDebug() << "Winner: " << piece;
+            return piece;
+        }
+    }
+
+    return PIECE_TYPE_NONE;
 }
 
 void BoardWidget::setActive(bool active)
@@ -40,72 +100,54 @@ void BoardWidget::setActive(bool active)
     repaint();
 }
 
-void BoardWidget::setBoard(Board new_board)
+Cell BoardWidget::cellFromPoint(QPoint p)
 {
-    board = new_board;
-    repaint();
-}
-
-void BoardWidget::setWinner(PieceType pieceType)
-{
-    winner_ = pieceType;
-    repaint();
-}
-
-void BoardWidget::setOverlayMessage(QString overlayMsg)
-{
-    overlayMessage_ = overlayMsg;
-    repaint();
-}
-
-Quad BoardWidget::quadrant(QPoint p)
-{
-    Quad quadrant;
+    Cell cell = CELL_NONE;
 
     if (is_top(p))
     {
-        quadrant = QUAD_TOP_MID;
+        cell = CELL_TOP_MID;
 
         if (is_left(p))
         {
-            quadrant = QUAD_TOP_LEFT;
+            cell = CELL_TOP_LEFT;
         }
         else if (is_right(p))
         {
-            quadrant = QUAD_TOP_RIGHT;
+            cell = CELL_TOP_RIGHT;
         }
     }
     else if (is_bottom(p))
     {
-        quadrant = QUAD_BOT_MID;
+        cell = CELL_BOT_MID;
 
         if (is_left(p))
         {
-            quadrant = QUAD_BOT_LEFT;
+            cell = CELL_BOT_LEFT;
         }
         else if (is_right(p))
         {
-            quadrant = QUAD_BOT_RIGHT;
+            cell = CELL_BOT_RIGHT;
         }
     }
     else // mid
     {
-        quadrant = QUAD_MID_MID;
+        cell = CELL_MID_MID;
 
         if (is_left(p))
         {
-            quadrant = QUAD_MID_LEFT;
+            cell = CELL_MID_LEFT;
         }
         else if (is_right(p))
         {
-            quadrant = QUAD_MID_RIGHT;
+            cell = CELL_MID_RIGHT;
         }
     }
 
-    return quadrant;
+    return cell;
 }
 
-QPoint BoardWidget::point_at_quad(Quad quad)
+QPoint BoardWidget::pointFromCell(Cell quad)
 {
     int q_int = (int) quad;
 
@@ -162,12 +204,109 @@ bool BoardWidget::is_right(QPoint p)
     return p.x() > (2*width()/3);
 }
 
+PieceType BoardWidget::containsOnly(QList<PieceType> cells)
+{
+    if (cells.contains(PIECE_TYPE_X))
+    {
+        if (!cells.contains(PIECE_TYPE_O) && !cells.contains(PIECE_TYPE_NONE))
+        {
+            return PIECE_TYPE_X;
+        }
+    }
+    else if (cells.contains(PIECE_TYPE_O))
+    {
+        if (!cells.contains(PIECE_TYPE_X) && !cells.contains(PIECE_TYPE_NONE))
+        {
+            return PIECE_TYPE_O;
+        }
+    }
+
+    return PIECE_TYPE_NONE;
+}
+
+QList<PieceType> BoardWidget::top()
+{
+    QList<PieceType> top;
+    top.append(board_[CELL_TOP_LEFT]);
+    top.append(board_[CELL_TOP_MID]);
+    top.append(board_[CELL_TOP_RIGHT]);
+    return top;
+}
+
+QList<PieceType> BoardWidget::midH()
+{
+    QList<PieceType> top;
+    top.append(board_[CELL_MID_LEFT]);
+    top.append(board_[CELL_MID_MID]);
+    top.append(board_[CELL_MID_RIGHT]);
+    return top;
+}
+
+QList<PieceType> BoardWidget::bot()
+{
+    QList<PieceType> top;
+    top.append(board_[CELL_BOT_LEFT]);
+    top.append(board_[CELL_BOT_MID]);
+    top.append(board_[CELL_BOT_RIGHT]);
+    return top;
+}
+
+QList<PieceType> BoardWidget::left()
+{
+    QList<PieceType> top;
+    top.append(board_[CELL_TOP_LEFT]);
+    top.append(board_[CELL_MID_LEFT]);
+    top.append(board_[CELL_BOT_LEFT]);
+    return top;
+}
+
+QList<PieceType> BoardWidget::midV()
+{
+    QList<PieceType> top;
+    top.append(board_[CELL_TOP_MID]);
+    top.append(board_[CELL_MID_MID]);
+    top.append(board_[CELL_BOT_MID]);
+    return top;
+}
+
+QList<PieceType> BoardWidget::right()
+{
+    QList<PieceType> top;
+    top.append(board_[CELL_TOP_RIGHT]);
+    top.append(board_[CELL_MID_RIGHT]);
+    top.append(board_[CELL_BOT_RIGHT]);
+    return top;
+}
+
+QList<PieceType> BoardWidget::diagDec()
+{
+    QList<PieceType> top;
+    top.append(board_[CELL_TOP_LEFT]);
+    top.append(board_[CELL_MID_MID]);
+    top.append(board_[CELL_BOT_RIGHT]);
+    return top;
+}
+
+QList<PieceType> BoardWidget::diagInc()
+{
+    QList<PieceType> top;
+    top.append(board_[CELL_TOP_RIGHT]);
+    top.append(board_[CELL_MID_MID]);
+    top.append(board_[CELL_BOT_LEFT]);
+    return top;
+}
+
 void BoardWidget::mousePressEvent(QMouseEvent * event)
 {
-    QPoint p(event->x(), event->y());
-    Quad quad = quadrant(p);
-    emit boardClicked(quad);
-    repaint();
+    if (active_)
+    {
+        QPoint p(event->x(), event->y());
+        Cell cell = cellFromPoint(p);
+        if (getPiece(cell) == PIECE_TYPE_NONE)
+        {
+            emit boardClicked(cell);
+        }
+    }
 }
 
 void BoardWidget::paintEvent(QPaintEvent *event)
@@ -180,35 +319,24 @@ void BoardWidget::paintEvent(QPaintEvent *event)
     // background/board
     QPixmap background(":/images/board.png");
     background = background.scaled(width(), height(),Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    painter.drawPixmap(0,0, width(), height(), background);
+    painter.drawPixmap(0, 0, width(), height(), background);
 
     // pieces
-    for (int quad_index = 0; quad_index < board.size() ; quad_index++)
+    for (int cell_index = 0; cell_index < board_.size() ; cell_index++)
     {
-        QString letter = board.piece_at(quad_index);
-        if (letter != EMPTY_CELL)
+        PieceType piece = board_[cell_index];
+
+        if (piece != PIECE_TYPE_NONE)
         {
             QString png = ":/images/o.png";
-            if (letter == PLAYER_X) png = ":/images/x.png";
-
+            if (piece == PIECE_TYPE_X) png = ":/images/x.png";
             int pieceWidth = 40;
             int pieceHeight = 40;
-            QPoint p = point_at_quad((Quad) quad_index);
+            QPoint p = pointFromCell((Cell) cell_index);
             QPixmap piecePixmap(png);
             piecePixmap = piecePixmap.scaled(pieceWidth, pieceHeight,Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
             painter.drawPixmap(p.x()-pieceWidth/2, p.y()-pieceHeight/2, pieceWidth, pieceHeight, piecePixmap);
         }
-    }
-
-    // game over message
-    if (overlayMessage_ != "")
-    {
-        QFont font = QFont();
-        font.setPointSize(14);
-        painter.setFont(font);
-        painter.setOpacity(1);
-        painter.setPen(Qt::red);
-        painter.drawText(QPoint(width()/2, height()/2), overlayMessage_);
     }
 
     QWidget::paintEvent(event);

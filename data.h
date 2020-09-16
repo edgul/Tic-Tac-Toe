@@ -4,6 +4,10 @@
 #define PLAYER_X  "X"
 #define PLAYER_O  "O"
 
+#include <QList>
+
+const int NUM_CELLS = 9;
+
 enum Target
 {
     TARGET_NONE,
@@ -34,6 +38,21 @@ enum Function
     FUNCTION_GAME_END
 };
 
+enum Cell
+{
+    CELL_TOP_LEFT  = 0,
+    CELL_TOP_MID   ,
+    CELL_TOP_RIGHT ,
+    CELL_MID_LEFT  ,
+    CELL_MID_MID   ,
+    CELL_MID_RIGHT ,
+    CELL_BOT_LEFT  ,
+    CELL_BOT_MID   ,
+    CELL_BOT_RIGHT ,
+    CELL_NONE
+};
+
+// TODO: remove
 enum Quad
 {
     QUAD_TOP_LEFT  = 0,
@@ -53,6 +72,15 @@ enum PieceType
     PIECE_TYPE_NONE,
     PIECE_TYPE_X,
     PIECE_TYPE_O
+};
+
+struct SimpleBoard
+{
+    QList<PieceType> board = { PIECE_TYPE_NONE, PIECE_TYPE_NONE, PIECE_TYPE_NONE,
+                               PIECE_TYPE_NONE, PIECE_TYPE_NONE, PIECE_TYPE_NONE,
+                               PIECE_TYPE_NONE, PIECE_TYPE_NONE, PIECE_TYPE_NONE
+                             };
+    SimpleBoard(QList<PieceType> board) : board(board) {}
 };
 
 #endif // DATA_H
