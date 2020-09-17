@@ -1,8 +1,8 @@
 #include "MyTCPServer.h"
 
 #include <iostream>
-#include "config.h"
-#include "BoardModel.h"
+#include "data/config.h"
+#include "data/BoardModel.h"
 
 #define MAX_SOCKETS (4)
 

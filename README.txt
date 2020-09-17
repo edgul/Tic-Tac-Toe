@@ -6,7 +6,7 @@ A tcp client-server tic-tac-toe game written in C++ and Qt.
 Future Features:
 * Separate client-server processes and projects
 * Add feedback for live connection and game states
-* add game metrics
+* Add game metrics
 * Add unit tests
 
 Architecture:
@@ -14,4 +14,5 @@ Architecture:
 * Rename MyTCPClient/Server (and probably compose over inherit)
 
 Bugs:
-* Rig up multi-player
+* Update multiplayer to use new screens (Game and Controller should use new types)
+

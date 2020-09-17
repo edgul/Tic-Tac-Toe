@@ -1,10 +1,8 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "AI.h"
-#include "BoardModel.h"
-#include "Player.h"
-
+#include "data/BoardModel.h"
+#include "data/Player.h"
 
 class Game : public QObject
 {
@@ -12,9 +10,7 @@ class Game : public QObject
 public:
     Game();
 
-    bool isSinglePlayer();
     void startMultiplayer(Player p1, Player p2);
-    void startSinglePlayer(Difficulty difficulty);
 
     bool getActive();
     void placePiece(Player player, Quad quad);
@@ -25,8 +21,6 @@ public:
     Player getPlayer2();
     Player currentTurnPlayer();
 
-    void ai_goes();
-
 signals:
     void update_msg_label(QString msg);
 
@@ -35,7 +29,6 @@ signals:
     void gameEnded(Player winningPlayer);
 
 private:
-    AI ai;
     BoardModel board;
 
     Player playerX;

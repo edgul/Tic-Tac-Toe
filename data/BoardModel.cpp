@@ -1,4 +1,4 @@
-#include "BoardModel.h"
+#include "data/BoardModel.h"
 
 #include <QDebug>
 

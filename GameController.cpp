@@ -1,6 +1,6 @@
 #include "GameController.h"
 
-#include "Message.h"
+#include "data/Message.h"
 
 GameController::GameController() :
     messageStream("")

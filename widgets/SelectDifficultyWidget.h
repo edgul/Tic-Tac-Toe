@@ -2,7 +2,7 @@
 #define SELECTDIFFICULTYWIDGET_H
 
 #include <QWidget>
-#include "data.h"
+#include "data/data.h"
 
 namespace Ui {
 class SelectDifficultyWidget;

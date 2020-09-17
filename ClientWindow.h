@@ -26,18 +26,12 @@ private slots:
     void on_radio_multi_player_clicked();
     void onBoardClicked(Quad quad);
 
-    void onGameInit(Player p1, Player p2);
-    void onGameStateUpdated(Player player1, Player player2, BoardModel board);
-    void onGameEnded(Player winner);
-
-    void onGameUpdateMsgLabel(QString msg);
     void onTcpClientReport(QString msg);
     void onTcpClientReceivedData(QByteArray data);
 
 private:
     Ui::ClientWindow *ui;
     BoardWidget * board_widget;
-    Game game;
 
     MyTCPClient tcp_client;
     QString messageStream;

@@ -32,12 +32,17 @@ private slots:
 private:
     Ui::ClientMainWindow *ui;
 
+    enum GameMode { GAME_MODE_INIT, GAME_MODE_SINGLE, GAME_MODE_MULTI };
+    GameMode gameMode_;
+
     WelcomeWidget *welcomeWidget_;
     SelectDifficultyWidget *selectDifficultyWidget_;
     GamePlayWidget *gamePlayWidget_;
-    AI ai;
+    AI ai_;
 
+    void singlePlayerLogic(Cell cell);
     void endGame(PieceType winner);
+
 
 };
 

@@ -6,6 +6,7 @@
 ClientMainWindow::ClientMainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::ClientMainWindow)
+  , gameMode_(GAME_MODE_INIT)
 {
     ui->setupUi(this);
 
@@ -40,15 +41,20 @@ void ClientMainWindow::onWelcomeWidgetClickedSinglePlayer()
 
 void ClientMainWindow::onWelcomeWidgetClickedMultiPlayer()
 {
+    gameMode_ = GAME_MODE_MULTI;
+    gamePlayWidget_->clear();
+    gamePlayWidget_->setActive(false);
+    gamePlayWidget_->setTitle("Multi Player Mode");
+    gamePlayWidget_->setSubtitle("Waiting for opponent...");
+
     ui->centralwidget->hide();
     ui->centralwidget = gamePlayWidget_;
     ui->centralwidget->show();
-
-    // TODO
 }
 
 void ClientMainWindow::onSelectDifficultyWidgetClickedOk()
 {
+    gameMode_ = GAME_MODE_SINGLE;
     gamePlayWidget_->clear();
     gamePlayWidget_->setActive(true);
     gamePlayWidget_->setTitle("Single Player Mode");
@@ -57,7 +63,6 @@ void ClientMainWindow::onSelectDifficultyWidgetClickedOk()
     ui->centralwidget->hide();
     ui->centralwidget = gamePlayWidget_;
     ui->centralwidget->show();
-
 }
 
 void ClientMainWindow::onSelectDifficultyWidgetClickedCancel()
@@ -69,6 +74,8 @@ void ClientMainWindow::onSelectDifficultyWidgetClickedCancel()
 
 void ClientMainWindow::onGamePlayWidgetClickedLeave()
 {
+    gameMode_ = GAME_MODE_INIT;
+
     ui->centralwidget->hide();
     ui->centralwidget = welcomeWidget_;
     ui->centralwidget->show();
@@ -76,10 +83,16 @@ void ClientMainWindow::onGamePlayWidgetClickedLeave()
 
 void ClientMainWindow::onGamePlayWidgetClickedValidCell(Cell cell)
 {
-    qDebug() << "Clicked valid cell: " << cell;
+    if (gameMode_ == GAME_MODE_SINGLE)
+    {
+        singlePlayerLogic(cell);
+    }
+}
+
+void ClientMainWindow::singlePlayerLogic(Cell cell)
+{
     if (!gamePlayWidget_->gameOver())
     {
-        qDebug() << "Game is on";
         if (cell != CELL_NONE)
         {
             gamePlayWidget_->setPiece(cell, PIECE_TYPE_X);
@@ -91,7 +104,7 @@ void ClientMainWindow::onGamePlayWidgetClickedValidCell(Cell cell)
             }
             else
             {
-                Cell aiMove = ai.getMove(gamePlayWidget_->getBoard(),
+                Cell aiMove = ai_.getMove(gamePlayWidget_->getBoard(),
                                          PIECE_TYPE_O,
                                          selectDifficultyWidget_->getDifficulty());
                 gamePlayWidget_->setPiece(aiMove, PIECE_TYPE_O);

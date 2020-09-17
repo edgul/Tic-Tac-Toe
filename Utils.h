@@ -1,7 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "data.h"
+#include "data/data.h"
 
 namespace Utils
 {

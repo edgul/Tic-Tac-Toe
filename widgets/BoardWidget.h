@@ -5,9 +5,8 @@
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPoint>
-
-#include "data.h"
-#include "BoardModel.h"
+#include "data/data.h"
+#include "data/BoardModel.h"
 
 namespace Ui {
 class BoardWidget;

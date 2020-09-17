@@ -3,9 +3,8 @@
 
 #include <QList>
 #include <QString>
-#include "data.h"
-
-#include "BoardModel.h"
+#include "data/data.h"
+#include "data/BoardModel.h"
 
 class AI
 {

@@ -4,8 +4,8 @@
 #include <QObject>
 #include "MyTCPServer.h"
 #include "Game.h"
-#include "Player.h"
-#include "Message.h"
+#include "data/Player.h"
+#include "data/Message.h"
 
 class GameController : public QObject
 {

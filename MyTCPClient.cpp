@@ -1,7 +1,7 @@
 #include "MyTCPClient.h"
 
 #include <iostream>
-#include "config.h"
+#include "data/config.h"
 
 MyTCPClient::MyTCPClient()
 {

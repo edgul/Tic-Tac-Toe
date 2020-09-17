@@ -15,11 +15,6 @@ Game::Game()
     singlePlayer = true;
 }
 
-bool Game::isSinglePlayer()
-{
-    return singlePlayer;
-}
-
 void Game::init()
 {
     board.clear();
@@ -32,8 +27,6 @@ void Game::init()
 
 void Game::startMultiplayer(Player p1, Player p2)
 {
-    // TODO: game should decide who is what
-
     if (p1.getPieceType() == PIECE_TYPE_X)
     {
         playerX = p1;
@@ -47,20 +40,6 @@ void Game::startMultiplayer(Player p1, Player p2)
 
     init();
     singlePlayer = false;
-    emit gameInit(playerX, playerO);
-}
-
-void Game::startSinglePlayer(Difficulty difficulty)
-{
-    init();
-
-    ai.set_piece_type(PLAYER_O);
-    ai.set_difficulty(difficulty);
-
-    playerO.setPlayerType(PIECE_TYPE_O);
-    playerX.setPlayerType(PIECE_TYPE_X);
-
-    singlePlayer = true;
     emit gameInit(playerX, playerO);
 }
 
@@ -114,16 +93,6 @@ void Game::checkForGameOver()
         QString msg = MSG_TURN_X;
         if (!turn_x) msg = MSG_TURN_O;
         emit update_msg_label(msg); 
-
-        // disable user input for one player game
-//        active = true;
-//        if (singlePlayer)
-//        {
-//            if (!turn_x)
-//            {
-//                active = false;
-//            }
-//        }
     }
 }
 
@@ -191,20 +160,6 @@ Player Game::currentTurnPlayer()
     {
         return playerO;
     }
-}
-
-void Game::ai_goes()
-{
-    QString ai_piece = ai.get_piece();
-    Quad ai_move = ai.get_move(board);
-
-    // temporary adapter
-    PieceType ai_piece_type = PieceType::PIECE_TYPE_O;
-    if (ai_piece == PLAYER_X) ai_piece_type = PieceType::PIECE_TYPE_X;
-
-    Player p(0, ai_piece_type);
-    placePiece(p, ai_move);
-    checkForGameOver();
 }
 
 QString Game::get_turn_piece()

@@ -25,18 +25,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-    BoardModel.cpp \
     ClientMainWindow.cpp \
+    ClientWindow.cpp \
     Game.cpp \
     MyTCPClient.cpp \
     MyTCPServer.cpp \
     AI.cpp \
     MainWindowManager.cpp \
-    ClientWindow.cpp \
     GameController.cpp \
-    Message.cpp \
-    Player.cpp \
     Utils.cpp \
+    data/Message.cpp \
+    data/Player.cpp \
+    data/BoardModel.cpp \
     widgets/BoardWidget.cpp \
     widgets/GamePlayWidget.cpp \
     widgets/SelectDifficultyWidget.cpp \
@@ -44,20 +44,20 @@ SOURCES += main.cpp\
 
 
 HEADERS  += \
-    BoardModel.h \
     ClientMainWindow.h \
+    ClientWindow.h \
     Game.h \
     MyTCPClient.h \
     MyTCPServer.h \
-    Utils.h \
-    config.h \
     AI.h \
-    data.h \
     MainWindowManager.h \
-    ClientWindow.h \
     GameController.h \
-    Message.h \
-    Player.h \
+    Utils.h \
+    data/data.h \
+    data/config.h \
+    data/Message.h \
+    data/Player.h \
+    data/BoardModel.h \
     widgets/BoardWidget.h \
     widgets/GamePlayWidget.h \
     widgets/SelectDifficultyWidget.h \

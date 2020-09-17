@@ -5,8 +5,8 @@
 #include <QTcpSocket>
 #include <QTimer>
 
-#include "data.h"
-#include "Message.h"
+#include "data/data.h"
+#include "data/Message.h"
 
 
 class MyTCPServer : public QTcpServer
