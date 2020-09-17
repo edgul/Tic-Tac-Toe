@@ -17,7 +17,7 @@ private slots:
     void onReceivedData(QString data, int user);
 
     void onGameInit(Player p1, Player p2);
-    void onGameStateUpdated(Player p1, Player p2, Board board);
+    void onGameStateUpdated(Player p1, Player p2, BoardModel board);
     void onGameEnded(Player winningPlayer);
     void onUserDisconnected(int user);
 

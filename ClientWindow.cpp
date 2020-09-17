@@ -18,7 +18,7 @@ ClientWindow::ClientWindow(QWidget *parent) :
     connect(board_widget, SIGNAL(boardClicked(Quad)), SLOT(onBoardClicked(Quad)));
     connect(&game, SIGNAL(update_msg_label(QString)), SLOT(onGameUpdateMsgLabel(QString)));
     connect(&game, SIGNAL(gameInit(Player,Player)), SLOT(onGameInit(Player,Player)));
-    connect(&game, SIGNAL(gameStateUpdated(Player, Player, Board)), SLOT(onGameStateUpdated(Player, Player, Board)));
+    connect(&game, SIGNAL(gameStateUpdated(Player, Player, BoardModel)), SLOT(onGameStateUpdated(Player, Player, BoardModel)));
     connect(&game, SIGNAL(gameEnded(Player)), SLOT(onGameEnded(Player)));
 
     connect(&tcp_client, SIGNAL(report(QString)), SLOT(onTcpClientReport(QString)));
@@ -113,7 +113,7 @@ void ClientWindow::onGameInit(Player p1, Player p2)
     }
 }
 
-void ClientWindow::onGameStateUpdated(Player player1, Player player2, Board board)
+void ClientWindow::onGameStateUpdated(Player player1, Player player2, BoardModel board)
 {
     if (game.isSinglePlayer())
     {
@@ -162,7 +162,7 @@ void ClientWindow::processMessage(Message msg)
     }
     else if (msg.getFunction() == FUNCTION_GAME_UPDATE)
     {
-        Board board;
+        BoardModel board;
         board.set_board_from_string(msg.getBoardStr());
         board_widget->setBoard(board);
     }

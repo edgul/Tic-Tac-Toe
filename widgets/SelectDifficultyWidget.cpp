@@ -15,25 +15,25 @@ SelectDifficultyWidget::~SelectDifficultyWidget()
     delete ui;
 }
 
-SelectDifficultyWidget::AiDifficulty SelectDifficultyWidget::getDifficulty()
+Difficulty SelectDifficultyWidget::getDifficulty()
 {
     if (ui->radioButtonEasy->isChecked())
     {
-        return AI_DIFFICULTY_EASY;
+        return DIFFICULTY_EASY;
     }
     else if (ui->radioButtonMedium->isChecked())
     {
-        return AI_DIFFICULTY_MED;
+        return DIFFICULTY_MEDIUM;
     }
     else if (ui->radioButtonHard->isChecked())
     {
-        return AI_DIFFICULTY_HARD;
+        return DIFFICULTY_HARD;
     }
     else
     {
         qDebug() << "Could not get difficulty from SelectDifficultyWidget";
         Q_ASSERT(false);
-        return AI_DIFFICULTY_NONE;
+        return DIFFICULTY_NONE;
     }
 }
 

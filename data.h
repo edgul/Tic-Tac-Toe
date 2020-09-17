@@ -74,6 +74,16 @@ enum PieceType
     PIECE_TYPE_O
 };
 
+
+
+enum Difficulty
+{
+    DIFFICULTY_EASY,
+    DIFFICULTY_MEDIUM,
+    DIFFICULTY_HARD,
+    DIFFICULTY_NONE
+};
+
 struct SimpleBoard
 {
     QList<PieceType> board = { PIECE_TYPE_NONE, PIECE_TYPE_NONE, PIECE_TYPE_NONE,

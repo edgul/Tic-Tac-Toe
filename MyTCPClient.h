@@ -5,7 +5,7 @@
 #include <QTcpSocket>
 #include <QTimer>
 #include "data.h"
-#include "Board.h"
+#include "BoardModel.h"
 #include "Message.h"
 
 class MyTCPClient : public QObject

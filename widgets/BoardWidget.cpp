@@ -26,72 +26,34 @@ BoardWidget::~BoardWidget()
 
 PieceType BoardWidget::getPiece(Cell cell)
 {
-    if (cell == CELL_NONE)
-    {
-        qDebug() << "Cannot get piece from CELL_NONE";
-        Q_ASSERT(false);
-        return PIECE_TYPE_NONE;
-    }
-
-    return board_[(int) cell];
+    return boardModel_.getPiece(cell);
 }
 
 void BoardWidget::setPiece(Cell cell, PieceType piece)
 {
-    if (cell == CELL_NONE)
-    {
-        qDebug() << "Cannot set piece of CELL_NONE";
-        Q_ASSERT(false);
-        return;
-    }
-
-    board_[cell] = piece;
+    boardModel_.setPiece(cell, piece);
     repaint();
 }
 
-SimpleBoard BoardWidget::getBoard()
+SimpleBoard BoardWidget::simpleBoard()
 {
-    return SimpleBoard(board_);
+    return boardModel_.simpleBoard();
 }
 
 bool BoardWidget::gameOver()
 {
-    return winner() != PIECE_TYPE_NONE || !board_.contains(PIECE_TYPE_NONE);
+    return boardModel_.gameOver();
 }
 
 void BoardWidget::clear()
 {
-    for (int i = 0; i < NUM_CELLS; i++)
-    {
-        board_[i] = PIECE_TYPE_NONE;
-    }
-
+    boardModel_.clearPieces();
     repaint();
 }
 
 PieceType BoardWidget::winner()
 {
-    QList<QList<PieceType>> cellsSet;
-    cellsSet.append(top());
-    cellsSet.append(midH());
-    cellsSet.append(bot());
-    cellsSet.append(left());
-    cellsSet.append(midV());
-    cellsSet.append(right());
-    cellsSet.append(diagInc());
-    cellsSet.append(diagDec());
-
-    foreach (QList<PieceType> cells, cellsSet)
-    {
-        PieceType piece = containsOnly(cells);
-        if (piece != PIECE_TYPE_NONE)
-        {
-            qDebug() << "Winner: " << piece;
-            return piece;
-        }
-    }
-
-    return PIECE_TYPE_NONE;
+    return boardModel_.winnerPiece();
 }
 
 void BoardWidget::setActive(bool active)
@@ -204,98 +166,6 @@ bool BoardWidget::is_right(QPoint p)
     return p.x() > (2*width()/3);
 }
 
-PieceType BoardWidget::containsOnly(QList<PieceType> cells)
-{
-    if (cells.contains(PIECE_TYPE_X))
-    {
-        if (!cells.contains(PIECE_TYPE_O) && !cells.contains(PIECE_TYPE_NONE))
-        {
-            return PIECE_TYPE_X;
-        }
-    }
-    else if (cells.contains(PIECE_TYPE_O))
-    {
-        if (!cells.contains(PIECE_TYPE_X) && !cells.contains(PIECE_TYPE_NONE))
-        {
-            return PIECE_TYPE_O;
-        }
-    }
-
-    return PIECE_TYPE_NONE;
-}
-
-QList<PieceType> BoardWidget::top()
-{
-    QList<PieceType> top;
-    top.append(board_[CELL_TOP_LEFT]);
-    top.append(board_[CELL_TOP_MID]);
-    top.append(board_[CELL_TOP_RIGHT]);
-    return top;
-}
-
-QList<PieceType> BoardWidget::midH()
-{
-    QList<PieceType> top;
-    top.append(board_[CELL_MID_LEFT]);
-    top.append(board_[CELL_MID_MID]);
-    top.append(board_[CELL_MID_RIGHT]);
-    return top;
-}
-
-QList<PieceType> BoardWidget::bot()
-{
-    QList<PieceType> top;
-    top.append(board_[CELL_BOT_LEFT]);
-    top.append(board_[CELL_BOT_MID]);
-    top.append(board_[CELL_BOT_RIGHT]);
-    return top;
-}
-
-QList<PieceType> BoardWidget::left()
-{
-    QList<PieceType> top;
-    top.append(board_[CELL_TOP_LEFT]);
-    top.append(board_[CELL_MID_LEFT]);
-    top.append(board_[CELL_BOT_LEFT]);
-    return top;
-}
-
-QList<PieceType> BoardWidget::midV()
-{
-    QList<PieceType> top;
-    top.append(board_[CELL_TOP_MID]);
-    top.append(board_[CELL_MID_MID]);
-    top.append(board_[CELL_BOT_MID]);
-    return top;
-}
-
-QList<PieceType> BoardWidget::right()
-{
-    QList<PieceType> top;
-    top.append(board_[CELL_TOP_RIGHT]);
-    top.append(board_[CELL_MID_RIGHT]);
-    top.append(board_[CELL_BOT_RIGHT]);
-    return top;
-}
-
-QList<PieceType> BoardWidget::diagDec()
-{
-    QList<PieceType> top;
-    top.append(board_[CELL_TOP_LEFT]);
-    top.append(board_[CELL_MID_MID]);
-    top.append(board_[CELL_BOT_RIGHT]);
-    return top;
-}
-
-QList<PieceType> BoardWidget::diagInc()
-{
-    QList<PieceType> top;
-    top.append(board_[CELL_TOP_RIGHT]);
-    top.append(board_[CELL_MID_MID]);
-    top.append(board_[CELL_BOT_LEFT]);
-    return top;
-}
-
 void BoardWidget::mousePressEvent(QMouseEvent * event)
 {
     if (active_)
@@ -314,7 +184,7 @@ void BoardWidget::paintEvent(QPaintEvent *event)
     QPainter painter;
     painter.begin(this);
 
-    if (!active_) painter.setOpacity(.25);
+    // if (!active_) painter.setOpacity(.25);
 
     // background/board
     QPixmap background(":/images/board.png");
@@ -322,9 +192,9 @@ void BoardWidget::paintEvent(QPaintEvent *event)
     painter.drawPixmap(0, 0, width(), height(), background);
 
     // pieces
-    for (int cell_index = 0; cell_index < board_.size() ; cell_index++)
+    for (int cell_index = 0; cell_index < NUM_CELLS ; cell_index++)
     {
-        PieceType piece = board_[cell_index];
+        PieceType piece = boardModel_.getPiece((Cell) cell_index);
 
         if (piece != PIECE_TYPE_NONE)
         {

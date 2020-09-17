@@ -50,7 +50,7 @@ void GamePlayWidget::setActive(bool active)
 
 SimpleBoard GamePlayWidget::getBoard()
 {
-    return boardWidget_->getBoard();
+    return boardWidget_->simpleBoard();
 }
 
 void GamePlayWidget::setTitle(const QString text)

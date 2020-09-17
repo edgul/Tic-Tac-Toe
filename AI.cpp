@@ -1,11 +1,31 @@
 #include "AI.h"
 
+#include <QDebug>
+#include "Utils.h"
+#include <time.h>
+
 AI::AI()
 {
     difficulty = DIFFICULTY_MEDIUM;
 }
 
-Cell AI::getMove(SimpleBoard simpleBoard, PieceType piece)
+Cell AI::getMove(SimpleBoard simpleBoard, PieceType piece, Difficulty difficulty)
+{
+    if (difficulty == DIFFICULTY_EASY)
+    {
+        return getDumbassMove(simpleBoard, piece);
+    }
+    else if (difficulty == DIFFICULTY_MEDIUM)
+    {
+        return getOkayMove(simpleBoard, piece);
+    }
+    else
+    {
+        return getBestMove(simpleBoard, piece);
+    }
+}
+
+Cell AI::getDumbassMove(SimpleBoard simpleBoard, PieceType piece)
 {
     for (int i = 0; i < simpleBoard.board.size(); i++)
     {
@@ -17,7 +37,108 @@ Cell AI::getMove(SimpleBoard simpleBoard, PieceType piece)
     return CELL_NONE;
 }
 
-Quad AI::get_best_move(Board board)
+Cell AI::getRandomMove(SimpleBoard simpleBoard, PieceType piece)
+{
+    BoardModel boardModel(simpleBoard);
+    QList<Cell> cells = boardModel.emptyCells();
+
+    srand(time(NULL));
+    int randomIndex = rand() % cells.length();
+    return cells[randomIndex];
+}
+
+Cell AI::getOkayMove(SimpleBoard simpleBoard, PieceType piece)
+{
+    BoardModel boardModel(simpleBoard);
+
+    // look for win
+    Cell okayMove = boardModel.availableWin(piece);
+    if (okayMove != CELL_NONE)
+    {
+        return okayMove;
+    }
+
+    // block a win
+    okayMove = boardModel.availableWin(Utils::opponentPiece(piece));
+    if (okayMove != CELL_NONE)
+    {
+        return okayMove;
+    }
+
+    return getRandomMove(simpleBoard, piece);;
+}
+
+Cell AI::getBestMove(SimpleBoard simpleBoard, PieceType piece)
+{
+    BoardModel boardModel(simpleBoard);
+
+    // look for win
+    Cell bestMove = boardModel.availableWin(piece);
+    if (bestMove != CELL_NONE)
+    {
+        return bestMove;
+    }
+
+    // block a win
+    bestMove = boardModel.availableWin(Utils::opponentPiece(piece));
+    if (bestMove != CELL_NONE)
+    {
+        return bestMove;
+    }
+
+    return getHighestProductivityMove(simpleBoard, piece);
+}
+
+Cell AI::getHighestProductivityMove(SimpleBoard simpleBoard, PieceType piece)
+{
+    BoardModel boardModel(simpleBoard);
+
+    QList<Cell> emptyCells = boardModel.emptyCells();
+
+    if (emptyCells.isEmpty())
+    {
+        qDebug() << "Cannot compute productivity - No Empty cells";
+        Q_ASSERT(false);
+        return CELL_NONE;
+    }
+
+    Cell highestCell = emptyCells[0];
+    int highestProductivity = productivity(emptyCells[0], simpleBoard, piece);
+    foreach (Cell cell, boardModel.emptyCells())
+    {
+        int p = productivity(cell, simpleBoard, piece);
+
+        if (p > highestProductivity)
+        {
+            highestProductivity = p;
+            highestCell = cell;
+        }
+    }
+
+    return highestCell;
+}
+
+int AI::productivity(Cell cell, SimpleBoard simpleBoard, PieceType piece)
+{
+    int p = 0;
+
+    BoardModel boardModel(simpleBoard);
+
+    foreach (auto winLine, boardModel.winLines())
+    {
+        if (winLine.keys().contains(cell))
+        {
+            if (!winLine.values().contains(Utils::opponentPiece(piece)))
+            {
+                p++;
+            }
+        }
+    }
+
+    return p;
+}
+
+Quad AI::get_best_move(BoardModel board)
 {
     Quad best_move = board.available_win(piece_type);
 
@@ -37,7 +158,7 @@ Quad AI::get_best_move(Board board)
     return best_move;
 }
 
-Quad AI::get_move(Board board)
+Quad AI::get_move(BoardModel board)
 {
     Quad move;
     if (difficulty == DIFFICULTY_EASY)
@@ -53,7 +174,7 @@ Quad AI::get_move(Board board)
 }
 
 // Assumes there is at least one move to make
-Quad AI::get_dumbass_move(Board board)
+Quad AI::get_dumbass_move(BoardModel board)
 {
     Quad move;
 
@@ -70,7 +191,7 @@ Quad AI::get_dumbass_move(Board board)
     return move;
 }
 
-Quad AI::highest_productivity_move(Board board)
+Quad AI::highest_productivity_move(BoardModel board)
 {
     QList<Quad> empty_quads = board.quads_with_piece(EMPTY_CELL);
 

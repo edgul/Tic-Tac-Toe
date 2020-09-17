@@ -76,8 +76,10 @@ void ClientMainWindow::onGamePlayWidgetClickedLeave()
 
 void ClientMainWindow::onGamePlayWidgetClickedValidCell(Cell cell)
 {
+    qDebug() << "Clicked valid cell: " << cell;
     if (!gamePlayWidget_->gameOver())
     {
+        qDebug() << "Game is on";
         if (cell != CELL_NONE)
         {
             gamePlayWidget_->setPiece(cell, PIECE_TYPE_X);
@@ -89,7 +91,9 @@ void ClientMainWindow::onGamePlayWidgetClickedValidCell(Cell cell)
             }
             else
             {
-                Cell aiMove = ai.getMove(gamePlayWidget_->getBoard(), PIECE_TYPE_O);
+                Cell aiMove = ai.getMove(gamePlayWidget_->getBoard(),
+                                         PIECE_TYPE_O,
+                                         selectDifficultyWidget_->getDifficulty());
                 gamePlayWidget_->setPiece(aiMove, PIECE_TYPE_O);
 
                 if (gamePlayWidget_->gameOver())

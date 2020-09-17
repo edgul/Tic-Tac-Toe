@@ -2,7 +2,7 @@
 #define GAME_H
 
 #include "AI.h"
-#include "Board.h"
+#include "BoardModel.h"
 #include "Player.h"
 
 
@@ -31,12 +31,12 @@ signals:
     void update_msg_label(QString msg);
 
     void gameInit(Player p1, Player p2);
-    void gameStateUpdated(Player p1, Player p2, Board board);
+    void gameStateUpdated(Player p1, Player p2, BoardModel board);
     void gameEnded(Player winningPlayer);
 
 private:
     AI ai;
-    Board board;
+    BoardModel board;
 
     Player playerX;
     Player playerO;

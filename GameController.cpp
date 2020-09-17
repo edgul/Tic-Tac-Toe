@@ -9,7 +9,7 @@ GameController::GameController() :
     connect(&tcp_server, SIGNAL(userDisconnected(int)), SLOT(onUserDisconnected(int)));
 
     connect(&game, SIGNAL(gameInit(Player,Player)), SLOT(onGameInit(Player,Player)));
-    connect(&game, SIGNAL(gameStateUpdated(Player, Player, Board)), SLOT(onGameStateUpdated(Player, Player, Board)));
+    connect(&game, SIGNAL(gameStateUpdated(Player, Player, BoardModel)), SLOT(onGameStateUpdated(Player, Player, BoardModel)));
     connect(&game, SIGNAL(gameEnded(Player)), SLOT(onGameEnded(Player)));
 }
 
@@ -33,7 +33,7 @@ void GameController::onGameInit(Player p1, Player p2)
     tcp_server.sendMessage(msg, p2.getUser());
 }
 
-void GameController::onGameStateUpdated(Player p1 , Player p2, Board board)
+void GameController::onGameStateUpdated(Player p1 , Player p2, BoardModel board)
 {
     Message msg(TARGET_GAME, FUNCTION_GAME_UPDATE, board.toString());
     tcp_server.sendMessage(msg, p1.getUser());

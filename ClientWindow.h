@@ -27,7 +27,7 @@ private slots:
     void onBoardClicked(Quad quad);
 
     void onGameInit(Player p1, Player p2);
-    void onGameStateUpdated(Player player1, Player player2, Board board);
+    void onGameStateUpdated(Player player1, Player player2, BoardModel board);
     void onGameEnded(Player winner);
 
     void onGameUpdateMsgLabel(QString msg);

@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "config.h"
-#include "Board.h"
+#include "BoardModel.h"
 
 #define MAX_SOCKETS (4)
 
