@@ -12,7 +12,10 @@ Future Features:
 Architecture:
 * Improve message/POD structures
 * Rename MyTCPClient/Server (and probably compose over inherit)
+* improve gamecontroller player tracking
 
 Bugs:
-* Update multiplayer to use new screens (Game and Controller should use new types)
+* crash when close window after game
 
+Todo:
+* Test multi-player more thoroughly

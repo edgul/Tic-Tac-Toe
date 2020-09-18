@@ -11,27 +11,28 @@ class Message
 public:
     explicit Message(QString str);
     explicit Message(Target t, Function f);
-    explicit Message(Target t, Function f, Quad q);
-    explicit Message(Target t, Function f, QString board);
+    explicit Message(Target t, Function f, Cell c);
+    explicit Message(Target t, Function f, SimpleBoard board);
     explicit Message(Target t, Function f, PieceType p);
 
     Target getTarget();
     Function getFunction();
-    Quad getQuad();
-    QString getBoardStr();
+    Cell getCell();
     PieceType getPieceType();
     QString toString();
+    SimpleBoard getSimpleBoard();
 
     void setMessage(QString rawStr);
-    void setTFQ(Target t, Function f, Quad q);
-    void setTFB(Target t, Function f, QString board);
+    void setTFC(Target t, Function f, Cell c);
+    void setTFB(Target t, Function f, SimpleBoard board);
     void setTFP(Target t, Function f, PieceType p);
 
 private:
     Target target;
     Function function;
-    Quad quad;
+    Cell cell;
     QString board;
+    SimpleBoard sBoard;
     PieceType pieceType;
 
 };

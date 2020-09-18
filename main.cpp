@@ -1,4 +1,3 @@
-#include "ClientWindow.h"
 #include <QApplication>
 
 // #include "MainWindowManager.h"
@@ -14,6 +13,9 @@ int main(int argc, char *argv[])
 
     ClientMainWindow cmw;
     cmw.show();
+
+    ClientMainWindow cmw2;
+    cmw2.show();
 
     return a.exec();
 }

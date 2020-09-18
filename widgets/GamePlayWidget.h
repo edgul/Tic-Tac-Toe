@@ -17,18 +17,19 @@ public:
     ~GamePlayWidget();
 
     void clear();
-    PieceType getPiece(Cell quad);
-    void setPiece(Cell quad, PieceType piece);
+    PieceType getPiece(Cell cell);
+    void setPiece(Cell cell, PieceType piece);
     PieceType winner();
     bool gameOver();
     void setActive(bool active);
     SimpleBoard getBoard();
 
+    void setBoard(SimpleBoard board);
     void setTitle(const QString text);
     void setSubtitle(const QString text);
 signals:
     void clickedLeave();
-    void clickedValidCell(Cell quad);
+    void clickedValidCell(Cell cell);
 
 private slots:
     void on_buttonLeave_clicked();

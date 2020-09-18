@@ -20,22 +20,18 @@ public:
     explicit BoardWidget(QWidget *parent = 0);
     ~BoardWidget();
 
-    void clear();
-    PieceType getPiece(Cell cell);
-    void setPiece(Cell cell, PieceType piece);
-    SimpleBoard simpleBoard();
     bool gameOver();
     PieceType winner();
+    PieceType getPiece(Cell cell);
+    SimpleBoard simpleBoard();
 
+    void clear();
+    void setPiece(Cell cell, PieceType piece);
     void setActive(bool active);
-
-    // TODO: remove
-    void setOverlayMessage(const QString text) {}
-    void setBoard(BoardModel board) {}
-    void setWinner(PieceType piece) {}
+    void setBoard(SimpleBoard board);
 
 signals:
-    void boardClicked(Cell quad);
+    void boardClicked(Cell cell);
 
 protected:
     void mousePressEvent(QMouseEvent * event);
@@ -48,7 +44,7 @@ private:
     BoardModel boardModel_;
 
     Cell cellFromPoint(QPoint p);
-    QPoint pointFromCell(Cell quad);
+    QPoint pointFromCell(Cell cell);
 
     // determine where point is
     bool is_top(QPoint p);

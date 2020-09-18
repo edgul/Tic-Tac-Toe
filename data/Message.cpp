@@ -1,8 +1,8 @@
 #include "Message.h"
 
 #include <QList>
-
 #include <QDebug>
+#include <Utils.h>
 
 Message::Message(QString str)
 {
@@ -13,17 +13,17 @@ Message::Message(Target t, Function f)
 {
     target = t;
     function = f;
-    quad = QUAD_NONE;
-    board = "";
+    cell = CELL_NONE;
+    sBoard = SimpleBoard();
     pieceType = PIECE_TYPE_NONE;
 }
 
-Message::Message(Target t, Function f, Quad q)
+Message::Message(Target t, Function f, Cell c)
 {
-    setTFQ(t,f,q);
+    setTFC(t,f,c);
 }
 
-Message::Message(Target t, Function f, QString board)
+Message::Message(Target t, Function f, SimpleBoard board)
 {
     setTFB(t,f,board);
 }
@@ -43,19 +43,19 @@ Function Message::getFunction()
     return function;
 }
 
-Quad Message::getQuad()
+Cell Message::getCell()
 {
-    return quad;
-}
-
-QString Message::getBoardStr()
-{
-    return board;
+    return cell;
 }
 
 PieceType Message::getPieceType()
 {
     return pieceType;
+}
+
+SimpleBoard Message::getSimpleBoard()
+{
+    return sBoard;
 }
 
 void Message::setMessage(QString rawStr)
@@ -86,11 +86,11 @@ void Message::setMessage(QString rawStr)
         }
         else if (function == FUNCTION_GAME_PLACE)
         {
-            quad = static_cast<Quad>(tokens[2].toInt());
+            cell = static_cast<Cell>(tokens[2].toInt());
         }
         else if (function == FUNCTION_GAME_UPDATE)
         {
-            board = tokens[2];
+            sBoard = Utils::strToSimpleBoard(tokens[2]);
         }
         else
         {
@@ -100,21 +100,21 @@ void Message::setMessage(QString rawStr)
     }
 }
 
-void Message::setTFQ(Target t, Function f, Quad q)
+void Message::setTFC(Target t, Function f, Cell c)
 {
     target = t;
     function = f;
-    quad = q;
-    board = "";
+    cell = c;
+    sBoard = SimpleBoard();
     pieceType = PIECE_TYPE_NONE;
 }
 
-void Message::setTFB(Target t, Function f, QString board)
+void Message::setTFB(Target t, Function f, SimpleBoard board)
 {
     target = t;
     function = f;
-    quad = QUAD_NONE;
-    this->board = board;
+    cell = CELL_NONE;
+    sBoard = board;
     pieceType = PIECE_TYPE_NONE;
 }
 
@@ -123,8 +123,8 @@ void Message::setTFP(Target t, Function f, PieceType p)
     target = t;
     function = f;
     pieceType = p;
-    quad = QUAD_NONE;
-    board = "";
+    cell = CELL_NONE;
+    sBoard = SimpleBoard();
 }
 
 QString Message::toString()
@@ -135,11 +135,11 @@ QString Message::toString()
 
     if (function == FUNCTION_GAME_PLACE)
     {
-        result += QString::number(static_cast<int>(quad));
+        result += QString::number(static_cast<int>(cell));
     }
     else if (function == FUNCTION_GAME_UPDATE)
     {
-        result += board;
+        result += Utils::simpleBoardToStr(sBoard);
     }
     else if (function == FUNCTION_GAME_END)
     {

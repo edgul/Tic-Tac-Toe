@@ -8,6 +8,7 @@ MyTCPClient::MyTCPClient()
     connect(&socket, SIGNAL(connected()), SLOT(onSocketConnected()));
     connect(&socket, SIGNAL(readyRead()), SLOT(onReadyRead()));
     connect(&socket, SIGNAL(disconnected()), SLOT(onSocketDisconnected()));
+    connect(&socket, SIGNAL(error(QAbstractSocket::SocketError)), SLOT(onSocketError(QAbstractSocket::SocketError)));
 
     connect(&flush_timer, SIGNAL(timeout()),SLOT(onFlushTimerTick()));
     flush_timer.setInterval(1000);
@@ -59,17 +60,24 @@ void MyTCPClient::disconnectFromServer()
 
 void MyTCPClient::onSocketConnected()
 {
+    emit connected();
     onReadyRead();
 }
 
 void MyTCPClient::onSocketDisconnected()
 {
     emit report("Connection Closed.\n");
+    emit disconnected();
 }
 
 void MyTCPClient::onReadyRead()
 {
     emit receivedData(socket.readAll());
+}
+
+void MyTCPClient::onSocketError(QAbstractSocket::SocketError err)
+{
+    emit error(err);
 }
 
 void MyTCPClient::onFlushTimerTick()

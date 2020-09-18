@@ -26,7 +26,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += main.cpp\
     ClientMainWindow.cpp \
-    ClientWindow.cpp \
     Game.cpp \
     MyTCPClient.cpp \
     MyTCPServer.cpp \
@@ -45,7 +44,6 @@ SOURCES += main.cpp\
 
 HEADERS  += \
     ClientMainWindow.h \
-    ClientWindow.h \
     Game.h \
     MyTCPClient.h \
     MyTCPServer.h \

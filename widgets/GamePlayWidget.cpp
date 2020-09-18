@@ -53,6 +53,11 @@ SimpleBoard GamePlayWidget::getBoard()
     return boardWidget_->simpleBoard();
 }
 
+void GamePlayWidget::setBoard(SimpleBoard board)
+{
+    boardWidget_->setBoard(board);
+}
+
 void GamePlayWidget::setTitle(const QString text)
 {
     ui->labelTitle->setText(text);

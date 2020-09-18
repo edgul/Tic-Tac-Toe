@@ -22,11 +22,15 @@ public:
 signals:
     void report(QString);
     void receivedData(QByteArray data);
+    void connected();
+    void disconnected();
+    void error(QAbstractSocket::SocketError);
 
 private slots:
     void onSocketConnected();
     void onSocketDisconnected();
     void onReadyRead();
+    void onSocketError(QAbstractSocket::SocketError err);
     void onFlushTimerTick();
 
 private:

@@ -1,10 +1,12 @@
 #ifndef DATA_H
 #define DATA_H
 
-#define PLAYER_X  "X"
-#define PLAYER_O  "O"
-
 #include <QList>
+#include <QString>
+
+const QString PIECE_STR_X = "X";
+const QString PIECE_STR_O = "O";
+const QString PIECE_STR_NONE = "-";
 
 const int NUM_CELLS = 9;
 
@@ -18,7 +20,7 @@ enum Target
 client:
 *******
 GAME_START
-GAME_PLACE Quad
+GAME_PLACE Cell
 GAME_QUIT PieceType
 
 server:
@@ -52,28 +54,12 @@ enum Cell
     CELL_NONE
 };
 
-// TODO: remove
-enum Quad
-{
-    QUAD_TOP_LEFT  = 0,
-    QUAD_TOP_MID   ,
-    QUAD_TOP_RIGHT ,
-    QUAD_MID_LEFT  ,
-    QUAD_MID_MID   ,
-    QUAD_MID_RIGHT ,
-    QUAD_BOT_LEFT  ,
-    QUAD_BOT_MID   ,
-    QUAD_BOT_RIGHT ,
-    QUAD_NONE
-};
-
 enum PieceType
 {
     PIECE_TYPE_NONE,
     PIECE_TYPE_X,
     PIECE_TYPE_O
 };
-
 
 
 enum Difficulty
@@ -84,12 +70,14 @@ enum Difficulty
     DIFFICULTY_NONE
 };
 
+
 struct SimpleBoard
 {
     QList<PieceType> board = { PIECE_TYPE_NONE, PIECE_TYPE_NONE, PIECE_TYPE_NONE,
                                PIECE_TYPE_NONE, PIECE_TYPE_NONE, PIECE_TYPE_NONE,
                                PIECE_TYPE_NONE, PIECE_TYPE_NONE, PIECE_TYPE_NONE
                              };
+    SimpleBoard() {}
     SimpleBoard(QList<PieceType> board) : board(board) {}
 };
 

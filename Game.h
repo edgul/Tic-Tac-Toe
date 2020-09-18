@@ -13,7 +13,7 @@ public:
     void startMultiplayer(Player p1, Player p2);
 
     bool getActive();
-    void placePiece(Player player, Quad quad);
+    void placePiece(Player player, Cell cell);
     void checkForGameOver();
     void quit(Player player_x);
 
@@ -39,7 +39,7 @@ private:
     bool singlePlayer;
 
     void init();
-    QString get_turn_piece();
+    PieceType getTurnPiece();
 
 };
 

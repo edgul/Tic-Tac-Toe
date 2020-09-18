@@ -30,18 +30,22 @@ void GameController::onGameInit(Player p1, Player p2)
 {
     Message msg(TARGET_GAME, FUNCTION_GAME_INIT, p1.getPieceType());
     tcp_server.sendMessage(msg, p1.getUser());
-    tcp_server.sendMessage(msg, p2.getUser());
+
+    Message msg2(TARGET_GAME, FUNCTION_GAME_INIT, p2.getPieceType());
+    tcp_server.sendMessage(msg2, p2.getUser());
 }
 
 void GameController::onGameStateUpdated(Player p1 , Player p2, BoardModel board)
 {
-    Message msg(TARGET_GAME, FUNCTION_GAME_UPDATE, board.toString());
+    Message msg(TARGET_GAME, FUNCTION_GAME_UPDATE, board.simpleBoard());
     tcp_server.sendMessage(msg, p1.getUser());
     tcp_server.sendMessage(msg, p2.getUser());
 }
 
 void GameController::onGameEnded(Player winningPlayer)
 {
+    qDebug() << "GAME ENDED: " << winningPlayer.getPieceType();
+
     Message msg(TARGET_GAME, FUNCTION_GAME_END, winningPlayer.getPieceType());
 
     Player p1 = game.getPlayer1();
@@ -133,7 +137,7 @@ void GameController::handleGameMessage(Message msg, int user)
         if (game.getActive() && sendingPlayer == game.currentTurnPlayer())
         {
             Player actingPlayer = players[players.indexOf(sendingPlayer)];
-            game.placePiece(actingPlayer, msg.getQuad());
+            game.placePiece(actingPlayer, msg.getCell());
             game.checkForGameOver();
         }
     }

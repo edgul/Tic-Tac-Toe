@@ -62,6 +62,12 @@ void BoardWidget::setActive(bool active)
     repaint();
 }
 
+void BoardWidget::setBoard(SimpleBoard board)
+{
+    boardModel_ = BoardModel(board);
+    repaint();
+}
+
 Cell BoardWidget::cellFromPoint(QPoint p)
 {
     Cell cell = CELL_NONE;
@@ -109,18 +115,18 @@ Cell BoardWidget::cellFromPoint(QPoint p)
     return cell;
 }
 
-QPoint BoardWidget::pointFromCell(Cell quad)
+QPoint BoardWidget::pointFromCell(Cell cell)
 {
-    int q_int = (int) quad;
+    int c_int = (int) cell;
 
     QPoint p;
 
     // set x
-    if (q_int % 3 == 0)
+    if (c_int % 3 == 0)
     {
         p.setX(width()/6);
     }
-    else if (q_int %3 == 1)
+    else if (c_int %3 == 1)
     {
         p.setX(width()/2);
     }
@@ -130,11 +136,11 @@ QPoint BoardWidget::pointFromCell(Cell quad)
     }
 
     // set y
-    if (q_int / 3 == 0)
+    if (c_int / 3 == 0)
     {
         p.setY(height()/6);
     }
-    else if (q_int / 3 == 1)
+    else if (c_int / 3 == 1)
     {
         p.setY(height()/2);
     }

@@ -17,7 +17,7 @@ Game::Game()
 
 void Game::init()
 {
-    board.clear();
+    board.clearPieces();
     turn_x = true;
 
     QString msg = MSG_TURN_X;
@@ -54,24 +54,27 @@ void Game::checkForGameOver()
 
     // check for game over
     Player winner;
-    if (board.winner() == PLAYER_X) // x wins
+    if (board.winnerPiece() == PIECE_TYPE_X) // x wins
     {
         QString msg = MSG_WIN_X;
         emit update_msg_label(msg);
 
         winner = playerX;
+        winner.setPlayerType(PIECE_TYPE_X); // hack because value lost FSR
+
         game_over = true;
 
     }
-    else if (board.winner() == PLAYER_O) // o wins
+    else if (board.winnerPiece() == PIECE_TYPE_O) // o wins
     {
         QString msg = MSG_WIN_O;
         emit update_msg_label(msg);
         winner = playerO;
+        winner.setPlayerType(PIECE_TYPE_O); // hack because value lost FSR
 
         game_over = true;
     }
-    else if (board.full()) // tie
+    else if (board.emptyCells().length() == 0) // tie
     {
         QString msg = MSG_TIE;
         emit update_msg_label(msg);
@@ -96,7 +99,7 @@ void Game::checkForGameOver()
     }
 }
 
-void Game::placePiece(Player player, Quad quad)
+void Game::placePiece(Player player, Cell cell)
 {
     if (active_) // accepting input from user
     {
@@ -114,11 +117,10 @@ void Game::placePiece(Player player, Quad quad)
 
         if (proceed)
         {
-            if (board.quad_empty(quad)) // valid move
+            if (board.getPiece(cell) == PIECE_TYPE_NONE) // valid move
             {
                 // Place piece
-                QString piece = get_turn_piece();
-                board.place(piece, quad);
+                board.setPiece(cell, getTurnPiece());
                 emit gameStateUpdated(playerX, playerO, board);
             }
         }
@@ -162,16 +164,16 @@ Player Game::currentTurnPlayer()
     }
 }
 
-QString Game::get_turn_piece()
+PieceType Game::getTurnPiece()
 {
-    QString turn_piece;
+    PieceType turn_piece = PIECE_TYPE_NONE;
     if (turn_x)
     {
-        turn_piece = PLAYER_X;
+        turn_piece = PIECE_TYPE_X;
     }
     else
     {
-        turn_piece = PLAYER_O;
+        turn_piece = PIECE_TYPE_O;
     }
 
     return turn_piece;

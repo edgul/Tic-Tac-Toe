@@ -4,7 +4,6 @@
 #include <QList>
 #include "data.h"
 
-#define EMPTY_CELL "-"
 
 class BoardModel
 {
@@ -27,22 +26,7 @@ public:
 
     // OLD
     // modifiers
-    void clear();
-    void place(QString piece, Quad q);
     void set_board_from_string(QString b_string);
-
-    QString winner();
-    // accessors
-    bool full();
-    bool quad_empty(Quad quad);
-    int pieces();
-    int size();
-    QString piece_at(int index);
-    QList<Quad> quads_with_piece(QString piece);
-
-    int productivity(Quad move, QString piece_type); // number of possible wins from this quad placement
-    QList<QList<Quad>> wins;
-    Quad available_win(QString piece_type);
 
     QString toString();
 
@@ -53,8 +37,6 @@ private:
                                 PIECE_TYPE_NONE, PIECE_TYPE_NONE, PIECE_TYPE_NONE,
                                 PIECE_TYPE_NONE, PIECE_TYPE_NONE, PIECE_TYPE_NONE
                               };
-
-    void define_winning_sets();
 
     QMap<Cell, PieceType> top();
     QMap<Cell, PieceType> midH();
