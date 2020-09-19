@@ -8,14 +8,13 @@ Future Features:
 * Add feedback for live connection and game states
 * Add game metrics
 * Add unit tests
+* Custom widget buttons
+* Draw win line when done
 
 Architecture:
-* Improve message/POD structures
-* Rename MyTCPClient/Server (and probably compose over inherit)
 * improve gamecontroller player tracking
 
 Bugs:
-* crash when close window after game
-
-Todo:
-* Test multi-player more thoroughly
+* Separate user message streams
+* Server doesn't toss user data who exits by close button (user doesn't disconnect)
+* Early quit should count as loss/win, not tie

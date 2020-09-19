@@ -5,8 +5,8 @@
 GameController::GameController() :
     messageStream("")
 {
-    connect(&tcp_server, SIGNAL(receivedData(QString,int)), SLOT(onReceivedData(QString, int)));
-    connect(&tcp_server, SIGNAL(userDisconnected(int)), SLOT(onUserDisconnected(int)));
+    connect(&tcpServer, SIGNAL(receivedData(QString,int)), SLOT(onReceivedData(QString, int)));
+    connect(&tcpServer, SIGNAL(userDisconnected(int)), SLOT(onUserDisconnected(int)));
 
     connect(&game, SIGNAL(gameInit(Player,Player)), SLOT(onGameInit(Player,Player)));
     connect(&game, SIGNAL(gameStateUpdated(Player, Player, BoardModel)), SLOT(onGameStateUpdated(Player, Player, BoardModel)));
@@ -20,39 +20,35 @@ void GameController::onReceivedData(QString data, int user)
     int firstDelimiter;
     while ((firstDelimiter = messageStream.indexOf(DELIMITER)) != -1)
     {
-        QString message = messageStream.mid(0, firstDelimiter);
+        QString messageStr = messageStream.mid(0, firstDelimiter);
         messageStream = messageStream.remove(0, firstDelimiter+4);
-        processMessage(message, user);
+        handleMessage(Message::messageFromString(messageStr), user);
     }
 }
 
 void GameController::onGameInit(Player p1, Player p2)
 {
-    Message msg(TARGET_GAME, FUNCTION_GAME_INIT, p1.getPieceType());
-    tcp_server.sendMessage(msg, p1.getUser());
-
-    Message msg2(TARGET_GAME, FUNCTION_GAME_INIT, p2.getPieceType());
-    tcp_server.sendMessage(msg2, p2.getUser());
+    tcpServer.sendMessage(Message::gameInitMessage(p1.getPieceType()), p1.getUser());
+    tcpServer.sendMessage(Message::gameInitMessage(p2.getPieceType()), p2.getUser());
 }
 
 void GameController::onGameStateUpdated(Player p1 , Player p2, BoardModel board)
 {
-    Message msg(TARGET_GAME, FUNCTION_GAME_UPDATE, board.simpleBoard());
-    tcp_server.sendMessage(msg, p1.getUser());
-    tcp_server.sendMessage(msg, p2.getUser());
+    Message msg = Message::gameUpdateMessage(board.simpleBoard());
+    tcpServer.sendMessage(msg, p1.getUser());
+    tcpServer.sendMessage(msg, p2.getUser());
 }
 
 void GameController::onGameEnded(Player winningPlayer)
 {
     qDebug() << "GAME ENDED: " << winningPlayer.getPieceType();
 
-    Message msg(TARGET_GAME, FUNCTION_GAME_END, winningPlayer.getPieceType());
-
+    Message msg = Message::gameEndMessage(winningPlayer.getPieceType());
     Player p1 = game.getPlayer1();
     Player p2 = game.getPlayer2();
 
-    tcp_server.sendMessage(msg, p1.getUser());
-    tcp_server.sendMessage(msg, p2.getUser());
+    tcpServer.sendMessage(msg, p1.getUser());
+    tcpServer.sendMessage(msg, p2.getUser());
 
     players.removeOne(p1);
     players.removeOne(p2);
@@ -72,26 +68,7 @@ void GameController::onUserDisconnected(int user)
     }
 }
 
-void GameController::processMessage(QString messageStr, int user)
-{
-    Message msg(messageStr);
-
-    if (msg.getTarget() == TARGET_NONE)
-    {
-        qDebug() << "Received Target NONE...";
-    }
-    else if (msg.getTarget() == TARGET_GAME)
-    {
-        handleGameMessage(msg, user);
-    }
-    else
-    {
-        Q_ASSERT(false);
-    }
-}
-
-
-void GameController::handleGameMessage(Message msg, int user)
+void GameController::handleMessage(Message msg, int user)
 {
     if (msg.getFunction() == FUNCTION_GAME_START)
     {

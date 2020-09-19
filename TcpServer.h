@@ -9,11 +9,11 @@
 #include "data/Message.h"
 
 
-class MyTCPServer : public QTcpServer
+class TcpServer : public QObject
 {
     Q_OBJECT
 public:
-    MyTCPServer();
+    TcpServer();
 
     void sendMessage(Message msg, int user);
 
@@ -36,6 +36,7 @@ private:
 
     QTimer flush_timer;
 
+    QTcpServer tcpServer_;
 };
 
 #endif // MYTCPSERVER_H

@@ -2,7 +2,7 @@
 #define GAMECONTROLLER_H
 
 #include <QObject>
-#include "MyTCPServer.h"
+#include "TcpServer.h"
 #include "Game.h"
 #include "data/Player.h"
 #include "data/Message.h"
@@ -22,13 +22,12 @@ private slots:
     void onUserDisconnected(int user);
 
 private:
-    MyTCPServer tcp_server;
+    TcpServer tcpServer;
     Game game;
     QString messageStream;
     QList<Player> players;
 
-    void processMessage(QString messageStr, int user);
-    void handleGameMessage(Message msg, int user);
+    void handleMessage(Message msg, int user);
 };
 
 #endif // GAMECONTROLLER_H

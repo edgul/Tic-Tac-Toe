@@ -10,25 +10,6 @@ const QString PIECE_STR_NONE = "-";
 
 const int NUM_CELLS = 9;
 
-enum Target
-{
-    TARGET_NONE,
-    TARGET_GAME
-};
-
-/*
-client:
-*******
-GAME_START
-GAME_PLACE Cell
-GAME_QUIT PieceType
-
-server:
-*******
-GAME_INIT PieceType
-GAME_UPDATE Board
-GAME_END PieceType
-*/
 enum Function
 {
     FUNCTION_NONE,

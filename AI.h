@@ -10,14 +10,13 @@ class AI
 {
 public:
     AI();
-
     Cell getMove(SimpleBoard simpleBoard, PieceType piece, Difficulty difficulty);
 
 private:
     Cell getOkayMove(SimpleBoard simpleBoard, PieceType piece);
     Cell getBestMove(SimpleBoard simpleBoard, PieceType piece);
-    Cell getDumbassMove(SimpleBoard simpleBoard, PieceType piece);
-    Cell getRandomMove(SimpleBoard simpleBoard, PieceType piece);
+    Cell getDumbassMove(SimpleBoard simpleBoard);
+    Cell getRandomMove(SimpleBoard simpleBoard);
     Cell getHighestProductivityMove(SimpleBoard simpleBoard, PieceType piece);
 
     int productivity(Cell cell, SimpleBoard simpleBoard, PieceType piece);

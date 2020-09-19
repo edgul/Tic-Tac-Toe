@@ -8,11 +8,11 @@
 #include "data/BoardModel.h"
 #include "data/Message.h"
 
-class MyTCPClient : public QObject
+class TcpClient : public QObject
 {
     Q_OBJECT
 public:
-    MyTCPClient();
+    TcpClient();
 
     bool isConnected();
     void connectToServer();

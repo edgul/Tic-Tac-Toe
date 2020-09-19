@@ -12,7 +12,7 @@ Cell AI::getMove(SimpleBoard simpleBoard, PieceType piece, Difficulty difficulty
 {
     if (difficulty == DIFFICULTY_EASY)
     {
-        return getDumbassMove(simpleBoard, piece);
+        return getRandomMove(simpleBoard);
     }
     else if (difficulty == DIFFICULTY_MEDIUM)
     {
@@ -24,7 +24,7 @@ Cell AI::getMove(SimpleBoard simpleBoard, PieceType piece, Difficulty difficulty
     }
 }
 
-Cell AI::getDumbassMove(SimpleBoard simpleBoard, PieceType piece)
+Cell AI::getDumbassMove(SimpleBoard simpleBoard)
 {
     for (int i = 0; i < simpleBoard.board.size(); i++)
     {
@@ -36,7 +36,7 @@ Cell AI::getDumbassMove(SimpleBoard simpleBoard, PieceType piece)
     return CELL_NONE;
 }
 
-Cell AI::getRandomMove(SimpleBoard simpleBoard, PieceType piece)
+Cell AI::getRandomMove(SimpleBoard simpleBoard)
 {
     BoardModel boardModel(simpleBoard);
     QList<Cell> cells = boardModel.emptyCells();
@@ -64,7 +64,7 @@ Cell AI::getOkayMove(SimpleBoard simpleBoard, PieceType piece)
         return okayMove;
     }
 
-    return getRandomMove(simpleBoard, piece);;
+    return getRandomMove(simpleBoard);
 }
 
 Cell AI::getBestMove(SimpleBoard simpleBoard, PieceType piece)

@@ -1,4 +1,4 @@
-#include "MyTCPServer.h"
+#include "TcpServer.h"
 
 #include <iostream>
 #include "data/config.h"
@@ -7,31 +7,31 @@
 #define MAX_SOCKETS (4)
 
 
-MyTCPServer::MyTCPServer() :
+TcpServer::TcpServer() :
     userCount(0)
 {
 
     QHostAddress host_address(HOST_ADDRESS);
-    if (!listen(host_address, HOST_PORT))
+    if (!tcpServer_.listen(host_address, HOST_PORT))
     {
         std::cout << "Failed to listen";
-
         return;
     }
 
     std::cout << "Listening on " << HOST_ADDRESS << ":" << HOST_PORT << std::endl;
 
-    connect(this, SIGNAL(newConnection()), this, SLOT(onNewConnection()));
+    connect(&tcpServer_, SIGNAL(newConnection()), this, SLOT(onNewConnection()));
 
     connect(&flush_timer, SIGNAL(timeout()),SLOT(onFlushTimerTick()));
     flush_timer.setInterval(1000);
     flush_timer.start();
 }
 
-void MyTCPServer::sendMessage(Message msg, int user)
+void TcpServer::sendMessage(Message msg, int user)
 {
     if (users.contains(user))
     {
+        qDebug() << "Server sending message to User: " << user;
         QTcpSocket *socket = users[user];
         QString toSend = msg.toString() + QString(DELIMITER);
         QByteArray data = toSend.toLatin1();
@@ -39,18 +39,18 @@ void MyTCPServer::sendMessage(Message msg, int user)
     }
 }
 
-void MyTCPServer::onNewConnection()
+void TcpServer::onNewConnection()
 {
     if (sockets.length() >= MAX_SOCKETS)
     {
         std::cout << "Cannot form new connection. Server busy";
 
-        QTcpSocket * new_socket = nextPendingConnection();
+        QTcpSocket * new_socket = tcpServer_.nextPendingConnection();
         new_socket->close();
         return;
     }
 
-    QTcpSocket * new_socket = nextPendingConnection();
+    QTcpSocket * new_socket = tcpServer_.nextPendingConnection();
     connect(new_socket, SIGNAL(readyRead()), SLOT(onReadyRead()));
     connect(new_socket, SIGNAL(aboutToClose()), SLOT(onAboutToClose()));
     connect(new_socket, SIGNAL(disconnected()), SLOT(onDisconnected()));
@@ -58,11 +58,11 @@ void MyTCPServer::onNewConnection()
     sockets.append(new_socket);
     users.insert(userCount, new_socket);
 
-    std::cout << "Connection formed with user: " << userCount<< "\n";
+    qDebug() << "SERVER: connection formed with user:  "<< userCount;
     userCount++;
 }
 
-void MyTCPServer::onReadyRead()
+void TcpServer::onReadyRead()
 {
     QTcpSocket * socket = (QTcpSocket *) sender();
     QByteArray data = socket->readAll();
@@ -96,7 +96,7 @@ void MyTCPServer::onReadyRead()
     }
 }
 
-void MyTCPServer::onAboutToClose()
+void TcpServer::onAboutToClose()
 {
     QTcpSocket * sending_socket = (QTcpSocket *) sender();
 
@@ -120,13 +120,15 @@ void MyTCPServer::onAboutToClose()
     }
 }
 
-void MyTCPServer::onFlushTimerTick()
+void TcpServer::onFlushTimerTick()
 {
     std::flush(std::cout);
 }
 
-void MyTCPServer::onDisconnected()
+void TcpServer::onDisconnected()
 {
+    qDebug() << "SERVER: client disconnected";
+
     QTcpSocket * socket = (QTcpSocket *) sender();
 
     int removeUser = -1;
@@ -141,7 +143,9 @@ void MyTCPServer::onDisconnected()
 
     if (removeUser != -1)
     {
+        qDebug() << "SERVER: removed user from user list: " << removeUser;
         users.remove(removeUser);
+        sockets.removeOne(socket);
         emit userDisconnected(removeUser);
     }
 }

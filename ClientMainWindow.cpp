@@ -34,6 +34,11 @@ ClientMainWindow::ClientMainWindow(QWidget *parent) :
 
 ClientMainWindow::~ClientMainWindow()
 {
+    qDebug() << "Destroying client window";
+    if (tcp_client.isConnected())
+    {
+        tcp_client.disconnectFromServer();
+    }
     delete ui;
 }
 
@@ -103,8 +108,7 @@ void ClientMainWindow::onGamePlayWidgetClickedValidCell(Cell cell)
     {
         // if is turn
         {
-            Message msg(TARGET_GAME, FUNCTION_GAME_PLACE, cell);
-            tcp_client.sendMessage(msg);
+            tcp_client.sendMessage(Message::gamePlacePiece(cell));
         }
     }
 }
@@ -126,8 +130,7 @@ void ClientMainWindow::onTcpClientReceivedData(QByteArray data)
         QString message = messageStream.mid(0, firstDelimiter);
         messageStream = messageStream.remove(0, firstDelimiter+4);
 
-        Message msg(message);
-        processMessage(msg);
+        processMessage(Message::messageFromString(message));
     }
 }
 
@@ -138,8 +141,7 @@ void ClientMainWindow::onTcpClientConnected()
     gameMode_ = GAME_MODE_MULTI_WAITING;
     gamePlayWidget_->setSubtitle("Waiting for opponent...");
 
-    Message msg(TARGET_GAME, FUNCTION_GAME_START);
-    tcp_client.sendMessage(msg);
+    tcp_client.sendMessage(Message::gameStart());
 }
 
 void ClientMainWindow::onTcpClientDisconnected()
@@ -148,7 +150,7 @@ void ClientMainWindow::onTcpClientDisconnected()
 
     if (gameMode_ == GAME_MODE_MULTI_WAITING || gameMode_ == GAME_MODE_MULTI_PLAYING)
     {
-        qDebug() << "Connection appears to have failed";
+        // qDebug() << "Connection appears to have failed";
         gameMode_ = GAME_MODE_INIT;
         ui->centralwidget->hide();
         ui->centralwidget = welcomeWidget_;
@@ -162,7 +164,7 @@ void ClientMainWindow::onTcpClientError(QAbstractSocket::SocketError err)
 
     if (gameMode_ == GAME_MODE_MULTI_CONNECTING)
     {
-        qDebug() << "ERR: Couldn't connect to server";
+        qDebug() << "ERR: Couldn't connect to server: " << err;
 
         gameMode_ = GAME_MODE_INIT;
         ui->centralwidget->hide();

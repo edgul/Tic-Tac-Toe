@@ -9,32 +9,35 @@
 class Message
 {
 public:
-    explicit Message(QString str);
-    explicit Message(Target t, Function f);
-    explicit Message(Target t, Function f, Cell c);
-    explicit Message(Target t, Function f, SimpleBoard board);
-    explicit Message(Target t, Function f, PieceType p);
+    static Message messageFromString(QString str);
 
-    Target getTarget();
+    // server sends
+    static Message gameInitMessage(PieceType piece);
+    static Message gameUpdateMessage(SimpleBoard board);
+    static Message gameEndMessage(PieceType winnerPiece);
+
+    // client sends
+    static Message gamePlacePiece(Cell cell);
+    static Message gameStart();
+
     Function getFunction();
     Cell getCell();
     PieceType getPieceType();
-    QString toString();
     SimpleBoard getSimpleBoard();
-
-    void setMessage(QString rawStr);
-    void setTFC(Target t, Function f, Cell c);
-    void setTFB(Target t, Function f, SimpleBoard board);
-    void setTFP(Target t, Function f, PieceType p);
+    QString toString();
 
 private:
-    Target target;
-    Function function;
-    Cell cell;
-    QString board;
+    Function function = FUNCTION_NONE;
+    Cell cell = CELL_NONE;
     SimpleBoard sBoard;
-    PieceType pieceType;
+    PieceType pieceType = PIECE_TYPE_NONE;
 
+    explicit Message();
+    void setFunction(Function f);
+    void setCell(Cell c);
+    void setPieceType(PieceType p);
+    void setSimpleBoard(SimpleBoard sb);
+    void setMessage(QString rawStr);
 };
 
 #endif // MESSAGE_H

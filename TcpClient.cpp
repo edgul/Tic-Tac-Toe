@@ -1,9 +1,9 @@
-#include "MyTCPClient.h"
+#include "TcpClient.h"
 
 #include <iostream>
 #include "data/config.h"
 
-MyTCPClient::MyTCPClient()
+TcpClient::TcpClient()
 {
     connect(&socket, SIGNAL(connected()), SLOT(onSocketConnected()));
     connect(&socket, SIGNAL(readyRead()), SLOT(onReadyRead()));
@@ -15,12 +15,12 @@ MyTCPClient::MyTCPClient()
     flush_timer.start();
 }
 
-bool MyTCPClient::isConnected()
+bool TcpClient::isConnected()
 {
     return socket.state() == QAbstractSocket::ConnectedState;
 }
 
-void MyTCPClient::connectToServer()
+void TcpClient::connectToServer()
 {
     if (socket.state() == QAbstractSocket::UnconnectedState)
     {
@@ -28,7 +28,7 @@ void MyTCPClient::connectToServer()
     }
 }
 
-void MyTCPClient::sendMessage(Message msg)
+void TcpClient::sendMessage(Message msg)
 {
     QString msgToSend = msg.toString() + QString(DELIMITER);
 
@@ -45,7 +45,7 @@ void MyTCPClient::sendMessage(Message msg)
     socket.write(data);
 }
 
-void MyTCPClient::disconnectFromServer()
+void TcpClient::disconnectFromServer()
 {
     qDebug() << "state: " << socket.state();
     if (socket.state() != QAbstractSocket::ConnectedState)
@@ -58,29 +58,29 @@ void MyTCPClient::disconnectFromServer()
     socket.disconnectFromHost();
 }
 
-void MyTCPClient::onSocketConnected()
+void TcpClient::onSocketConnected()
 {
     emit connected();
     onReadyRead();
 }
 
-void MyTCPClient::onSocketDisconnected()
+void TcpClient::onSocketDisconnected()
 {
     emit report("Connection Closed.\n");
     emit disconnected();
 }
 
-void MyTCPClient::onReadyRead()
+void TcpClient::onReadyRead()
 {
     emit receivedData(socket.readAll());
 }
 
-void MyTCPClient::onSocketError(QAbstractSocket::SocketError err)
+void TcpClient::onSocketError(QAbstractSocket::SocketError err)
 {
     emit error(err);
 }
 
-void MyTCPClient::onFlushTimerTick()
+void TcpClient::onFlushTimerTick()
 {
     std::flush(std::cout);
 }

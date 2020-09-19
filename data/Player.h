@@ -7,20 +7,20 @@ class Player
 {
 public:
     Player();
-    Player(int user);
-    Player(int user, PieceType type);
+    Player(int user_);
+    Player(int user_, PieceType type_);
 
     PieceType getPieceType() const;
-    void setPlayerType(PieceType type);
+    void setPlayerType(PieceType type_);
 
-    void setUser(int user);
+    void setUser(int user_);
     int getUser() const;
 
     friend bool operator==(const Player& lhs, const Player& rhs);
 
 private:
-    PieceType type;
-    int user;
+    PieceType type_;
+    int user_;
 };
 
 

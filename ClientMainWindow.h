@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include "AI.h"
-#include "MyTCPClient.h"
+#include "TcpClient.h"
 #include "widgets/WelcomeWidget.h"
 #include "widgets/SelectDifficultyWidget.h"
 #include "widgets/GamePlayWidget.h"
@@ -51,7 +51,7 @@ private:
     GamePlayWidget *gamePlayWidget_;
     AI ai_;
 
-    MyTCPClient tcp_client;
+    TcpClient tcp_client;
     QString messageStream;
 
     PieceType multiPlayerPiece_;

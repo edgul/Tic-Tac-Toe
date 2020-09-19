@@ -1,41 +1,37 @@
 #include "Player.h"
 
-Player::Player()
+Player::Player() : Player(-1, PIECE_TYPE_NONE)
 {
-    user = -1;
-    type = PIECE_TYPE_NONE;
 }
 
-Player::Player(int user)
+Player::Player(int user) : Player(user, PIECE_TYPE_NONE)
 {
-    setUser(user);
-    setPlayerType(PIECE_TYPE_NONE);
 }
 
-Player::Player(int user, PieceType type)
+Player::Player(int user, PieceType type) :
+    type_(type),
+    user_(user)
 {
-    setPlayerType(type);
-    setUser(user);
 }
 
 PieceType Player::getPieceType() const
 {
-    return type;
+    return type_;
 }
 
 void Player::setPlayerType(PieceType type)
 {
-    this->type = type;
+    type_ = type;
 }
 
 void Player::setUser(int user)
 {
-    this->user = user;
+    user_ = user;
 }
 
 int Player::getUser() const
 {
-    return user;
+    return user_;
 }
 
 bool operator==(const Player& lhs, const Player& rhs)

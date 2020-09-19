@@ -27,11 +27,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += main.cpp\
     ClientMainWindow.cpp \
     Game.cpp \
-    MyTCPClient.cpp \
-    MyTCPServer.cpp \
     AI.cpp \
     MainWindowManager.cpp \
     GameController.cpp \
+    TcpClient.cpp \
+    TcpServer.cpp \
     Utils.cpp \
     data/Message.cpp \
     data/Player.cpp \
@@ -45,11 +45,11 @@ SOURCES += main.cpp\
 HEADERS  += \
     ClientMainWindow.h \
     Game.h \
-    MyTCPClient.h \
-    MyTCPServer.h \
     AI.h \
     MainWindowManager.h \
     GameController.h \
+    TcpClient.h \
+    TcpServer.h \
     Utils.h \
     data/data.h \
     data/config.h \
