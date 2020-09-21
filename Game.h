@@ -10,16 +10,17 @@ class Game : public QObject
 public:
     Game();
 
-    void startMultiplayer(Player p1, Player p2);
+    void start(Player pX, Player pO);
 
     bool getActive();
-    void placePiece(Player player, Cell cell);
+    void placePiece(Cell cell);
     void checkForGameOver();
-    void quit(Player player_x);
+    void quit(PieceType quittingPiece);
 
-    Player getPlayer1();
-    Player getPlayer2();
-    Player currentTurnPlayer();
+    Player getPlayerX();
+    Player getPlayerO();
+
+    PieceType currentTurnPiece();
 
 signals:
     void update_msg_label(QString msg);
@@ -34,12 +35,11 @@ private:
     Player playerX;
     Player playerO;
 
-    bool turn_x;
-    bool active_;
-    bool singlePlayer;
+    PieceType turnPiece_;
+    PieceType winner_;
 
     void init();
-    PieceType getTurnPiece();
+    Player winnerPlayer();
 
 };
 

@@ -27,6 +27,8 @@ private:
     QString messageStream;
     QList<Player> players;
 
+    int indexOfFirstPlayerNotInGame();
+    Player getPlayerByUser(int user);
     void handleMessage(Message msg, int user);
 };
 

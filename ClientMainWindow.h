@@ -36,6 +36,9 @@ private slots:
     void onTcpClientDisconnected();
     void onTcpClientError(QAbstractSocket::SocketError err);
 
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
 private:
     Ui::ClientMainWindow *ui;
 

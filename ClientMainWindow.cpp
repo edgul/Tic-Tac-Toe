@@ -34,11 +34,8 @@ ClientMainWindow::ClientMainWindow(QWidget *parent) :
 
 ClientMainWindow::~ClientMainWindow()
 {
-    qDebug() << "Destroying client window";
-    if (tcp_client.isConnected())
-    {
-        tcp_client.disconnectFromServer();
-    }
+    // qDebug() << "Destroying client window";
+
     delete ui;
 }
 
@@ -120,7 +117,7 @@ void ClientMainWindow::onTcpClientReport(QString msg)
 
 void ClientMainWindow::onTcpClientReceivedData(QByteArray data)
 {
-    qDebug() << "ClientMainWindow::onTcpClientReceivedData()";
+    // qDebug() << "ClientMainWindow::onTcpClientReceivedData()";
 
     messageStream += QString::fromLatin1(data);
 
@@ -136,7 +133,7 @@ void ClientMainWindow::onTcpClientReceivedData(QByteArray data)
 
 void ClientMainWindow::onTcpClientConnected()
 {
-    qDebug() << "ClientMainWindow::onTcpClientConnected()";
+    // qDebug() << "ClientMainWindow::onTcpClientConnected()";
 
     gameMode_ = GAME_MODE_MULTI_WAITING;
     gamePlayWidget_->setSubtitle("Waiting for opponent...");
@@ -146,7 +143,7 @@ void ClientMainWindow::onTcpClientConnected()
 
 void ClientMainWindow::onTcpClientDisconnected()
 {
-    qDebug() << "ClientMainWindow::onTcpClientDisconnected()";
+    // qDebug() << "ClientMainWindow::onTcpClientDisconnected()";
 
     if (gameMode_ == GAME_MODE_MULTI_WAITING || gameMode_ == GAME_MODE_MULTI_PLAYING)
     {
@@ -160,7 +157,7 @@ void ClientMainWindow::onTcpClientDisconnected()
 
 void ClientMainWindow::onTcpClientError(QAbstractSocket::SocketError err)
 {
-    qDebug() << "ClientMainWindow::onTcpClientError()";
+    // qDebug() << "ClientMainWindow::onTcpClientError()";
 
     if (gameMode_ == GAME_MODE_MULTI_CONNECTING)
     {
@@ -171,6 +168,16 @@ void ClientMainWindow::onTcpClientError(QAbstractSocket::SocketError err)
         ui->centralwidget = welcomeWidget_;
         ui->centralwidget->show();
     }
+}
+
+void ClientMainWindow::closeEvent(QCloseEvent *event)
+{
+    if (tcp_client.isConnected())
+    {
+        tcp_client.disconnectFromServer();
+    }
+
+    QWidget::closeEvent(event);
 }
 
 void ClientMainWindow::singlePlayerLogic(Cell cell)
@@ -219,7 +226,7 @@ void ClientMainWindow::report(QString str)
 
 void ClientMainWindow::processMessage(Message msg)
 {
-    qDebug() << "ClientMainWindow::processMessage()";
+    // qDebug() << "ClientMainWindow::processMessage()";
 
     if (msg.getFunction() == FUNCTION_GAME_INIT)
     {

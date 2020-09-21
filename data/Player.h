@@ -7,7 +7,6 @@ class Player
 {
 public:
     Player();
-    Player(int user_);
     Player(int user_, PieceType type_);
 
     PieceType getPieceType() const;

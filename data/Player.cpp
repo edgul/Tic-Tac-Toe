@@ -4,9 +4,6 @@ Player::Player() : Player(-1, PIECE_TYPE_NONE)
 {
 }
 
-Player::Player(int user) : Player(user, PIECE_TYPE_NONE)
-{
-}
 
 Player::Player(int user, PieceType type) :
     type_(type),

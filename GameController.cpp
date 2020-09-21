@@ -44,8 +44,8 @@ void GameController::onGameEnded(Player winningPlayer)
     qDebug() << "GAME ENDED: " << winningPlayer.getPieceType();
 
     Message msg = Message::gameEndMessage(winningPlayer.getPieceType());
-    Player p1 = game.getPlayer1();
-    Player p2 = game.getPlayer2();
+    Player p1 = game.getPlayerX();
+    Player p2 = game.getPlayerO();
 
     tcpServer.sendMessage(msg, p1.getUser());
     tcpServer.sendMessage(msg, p2.getUser());
@@ -56,65 +56,77 @@ void GameController::onGameEnded(Player winningPlayer)
 
 void GameController::onUserDisconnected(int user)
 {
-    Player player(user);
+    Player player = getPlayerByUser(user);
     players.removeOne(player);
 
     if (game.getActive())
     {
-        if (game.getPlayer1() == player || game.getPlayer2() == player)
+        if (game.getPlayerX() == player || game.getPlayerO() == player)
         {
-            game.quit(player);
+            // qDebug() << "Piece type quit: " << player.getPieceType();
+            game.quit(player.getPieceType());
         }
     }
+}
+
+int GameController::indexOfFirstPlayerNotInGame()
+{
+    for (int i = 0; i < players.length(); i++)
+    {
+        if (players[i].getPieceType() == PIECE_TYPE_NONE)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+Player GameController::getPlayerByUser(int user)
+{
+    foreach (Player p, players)
+    {
+        if (p.getUser() == user)
+        {
+            return p;
+        }
+    }
+
+    return Player();
 }
 
 void GameController::handleMessage(Message msg, int user)
 {
     if (msg.getFunction() == FUNCTION_GAME_START)
     {
-        PieceType newPieceType = PIECE_TYPE_NONE;
-        Player newPlayer(user, newPieceType);
+        int index = indexOfFirstPlayerNotInGame();
 
-        if (!players.contains(newPlayer)) // player can only play 1 game at a time
+        if (index != -1)
         {
-            // look for another to play with
-            Player* otherPlayer = nullptr;
-            for (int i = 0; i < players.length(); i++)
-            {
-                Player &player = players[i];
-                if (player.getPieceType() == PIECE_TYPE_NONE)
-                {
-                    otherPlayer = &player;
-                }
-            }
+            players[index] = Player(players[index].getUser(), PIECE_TYPE_X);
+            Player newPlayer(user, PIECE_TYPE_O);
+            players.append(newPlayer);
 
-            // Add player to list
-            if (otherPlayer)
-            {
-                otherPlayer->setPlayerType(PIECE_TYPE_X);
-                newPieceType = PIECE_TYPE_O;
-
-                players.append(newPlayer);
-                game.startMultiplayer(*otherPlayer, newPlayer);
-            }
-            else
-            {
-                players.append(newPlayer);
-            }
+            game.start(players[index], newPlayer);
+        }
+        else
+        {
+            Player newPlayer(user, PIECE_TYPE_NONE);
+            players.append(newPlayer);
         }
     }
     else if (msg.getFunction() == FUNCTION_GAME_QUIT)
     {
-        Player quitting = players[players.indexOf(Player(user))];
-        game.quit(quitting);
+        Player quitting = getPlayerByUser(user);
+        game.quit(quitting.getPieceType());
     }
     else if (msg.getFunction() == FUNCTION_GAME_PLACE)
     {
-        Player sendingPlayer(user);
-        if (game.getActive() && sendingPlayer == game.currentTurnPlayer())
+        Player actingPlayer =  getPlayerByUser(user);
+
+        if (game.getActive() && actingPlayer.getPieceType() == game.currentTurnPiece())
         {
-            Player actingPlayer = players[players.indexOf(sendingPlayer)];
-            game.placePiece(actingPlayer, msg.getCell());
+            game.placePiece(msg.getCell());
             game.checkForGameOver();
         }
     }

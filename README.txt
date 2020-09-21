@@ -11,10 +11,6 @@ Future Features:
 * Custom widget buttons
 * Draw win line when done
 
-Architecture:
-* improve gamecontroller player tracking
-
-Bugs:
+TODO:
+* add support for multiple games
 * Separate user message streams
-* Server doesn't toss user data who exits by close button (user doesn't disconnect)
-* Early quit should count as loss/win, not tie

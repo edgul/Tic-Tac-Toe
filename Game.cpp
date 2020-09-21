@@ -7,45 +7,35 @@
 #define MSG_TIE    "Tie game."
 
 #include <QDebug>
+#include "Utils.h"
 
-Game::Game()
+Game::Game() :
+    turnPiece_(PIECE_TYPE_NONE)
+  , winner_(PIECE_TYPE_NONE)
 {
-    turn_x = true;
-    active_ = false;
-    singlePlayer = true;
 }
 
 void Game::init()
 {
     board.clearPieces();
-    turn_x = true;
+    turnPiece_ = PIECE_TYPE_X;
 
     QString msg = MSG_TURN_X;
     emit update_msg_label(msg);
-    active_ = true;
 }
 
-void Game::startMultiplayer(Player p1, Player p2)
+void Game::start(Player pX, Player pO)
 {
-    if (p1.getPieceType() == PIECE_TYPE_X)
-    {
-        playerX = p1;
-        playerO = p2;
-    }
-    else
-    {
-        playerX = p2;
-        playerO = p1;
-    }
+    playerX = pX;
+    playerO = pO;
 
     init();
-    singlePlayer = false;
     emit gameInit(playerX, playerO);
 }
 
 bool Game::getActive()
 {
-    return active_;
+    return turnPiece_ != PIECE_TYPE_NONE;
 }
 
 void Game::checkForGameOver()
@@ -85,97 +75,59 @@ void Game::checkForGameOver()
     if (game_over)
     {
         // stop taking user input when the game is over
-        active_ = false;
+        turnPiece_ = PIECE_TYPE_NONE;
         emit gameEnded(winner);
     }
-    else
-    {
-        turn_x = !turn_x;
+}
 
-        // update label
+void Game::placePiece(Cell cell)
+{
+    if (board.getPiece(cell) == PIECE_TYPE_NONE) // valid move
+    {
+        // Place piece
+        board.setPiece(cell, turnPiece_);
+        turnPiece_ = Utils::opponentPiece(turnPiece_);
+
+        emit gameStateUpdated(playerX, playerO, board);
+
         QString msg = MSG_TURN_X;
-        if (!turn_x) msg = MSG_TURN_O;
-        emit update_msg_label(msg); 
+        if (turnPiece_ == PIECE_TYPE_O) msg = MSG_TURN_O;
+        emit update_msg_label(msg);
     }
 }
 
-void Game::placePiece(Player player, Cell cell)
+void Game::quit(PieceType quittingPiece)
 {
-    if (active_) // accepting input from user
-    {
-        // TODO: simplify logic
-        bool proceed = false;
-
-        if (player.getPieceType() == PIECE_TYPE_X)
-        {
-            if (turn_x) proceed = true;
-        }
-        else
-        {
-            if (!turn_x) proceed = true;
-        }
-
-        if (proceed)
-        {
-            if (board.getPiece(cell) == PIECE_TYPE_NONE) // valid move
-            {
-                // Place piece
-                board.setPiece(cell, getTurnPiece());
-                emit gameStateUpdated(playerX, playerO, board);
-            }
-        }
-    }
+    turnPiece_ = PIECE_TYPE_NONE;
+    winner_ = Utils::opponentPiece(quittingPiece);
+    emit gameEnded(winnerPlayer());
 }
 
-void Game::quit(Player quittingPlayer)
-{
-    Player winningPlayer;
-    if (quittingPlayer == playerX)
-    {
-        winningPlayer = playerO;
-    }
-    else
-    {
-        winningPlayer = playerX;
-    }
-
-    emit gameEnded(winningPlayer);
-}
-
-Player Game::getPlayer1()
+Player Game::getPlayerX()
 {
     return playerX;
 }
 
-Player Game::getPlayer2()
+Player Game::getPlayerO()
 {
     return playerO;
 }
 
-Player Game::currentTurnPlayer()
+Player Game::winnerPlayer()
 {
-    if (turn_x)
-    {
-        return playerX;
-    }
-    else
+    if (winner_ == PIECE_TYPE_O)
     {
         return playerO;
     }
+    else if (winner_ == PIECE_TYPE_X)
+    {
+        return playerX;
+    }
+    return Player();
 }
 
-PieceType Game::getTurnPiece()
+PieceType Game::currentTurnPiece()
 {
-    PieceType turn_piece = PIECE_TYPE_NONE;
-    if (turn_x)
-    {
-        turn_piece = PIECE_TYPE_X;
-    }
-    else
-    {
-        turn_piece = PIECE_TYPE_O;
-    }
-
-    return turn_piece;
+    return turnPiece_;
 }
 
