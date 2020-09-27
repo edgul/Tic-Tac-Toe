@@ -13,9 +13,13 @@ int main(int argc, char *argv[])
 
     ClientMainWindow cmw;
     cmw.show();
-
     ClientMainWindow cmw2;
     cmw2.show();
+
+//    ClientMainWindow cmw3;
+//    cmw3.show();
+//    ClientMainWindow cmw4;
+//    cmw4.show();
 
     return a.exec();
 }

@@ -2,78 +2,104 @@
 
 #include "data/Message.h"
 
-GameController::GameController() :
-    messageStream("")
+GameController::GameController()
 {
-    connect(&tcpServer, SIGNAL(receivedData(QString,int)), SLOT(onReceivedData(QString, int)));
-    connect(&tcpServer, SIGNAL(userDisconnected(int)), SLOT(onUserDisconnected(int)));
+    connect(&tcpServer_, SIGNAL(receivedData(QString,int)), SLOT(onReceivedData(QString, int)));
+    connect(&tcpServer_, SIGNAL(userDisconnected(int)), SLOT(onUserDisconnected(int)));
 
-    connect(&game, SIGNAL(gameInit(Player,Player)), SLOT(onGameInit(Player,Player)));
-    connect(&game, SIGNAL(gameStateUpdated(Player, Player, BoardModel)), SLOT(onGameStateUpdated(Player, Player, BoardModel)));
-    connect(&game, SIGNAL(gameEnded(Player)), SLOT(onGameEnded(Player)));
 }
 
 void GameController::onReceivedData(QString data, int user)
 {
-    messageStream += data;
+    messageStreams_[user] += data;
 
     int firstDelimiter;
-    while ((firstDelimiter = messageStream.indexOf(DELIMITER)) != -1)
+    while ((firstDelimiter = messageStreams_[user].indexOf(DELIMITER)) != -1)
     {
-        QString messageStr = messageStream.mid(0, firstDelimiter);
-        messageStream = messageStream.remove(0, firstDelimiter+4);
+        QString messageStr = messageStreams_[user].mid(0, firstDelimiter);
+        messageStreams_[user] = messageStreams_[user].remove(0, firstDelimiter+4);
         handleMessage(Message::messageFromString(messageStr), user);
     }
 }
 
 void GameController::onGameInit(Player p1, Player p2)
 {
-    tcpServer.sendMessage(Message::gameInitMessage(p1.getPieceType()), p1.getUser());
-    tcpServer.sendMessage(Message::gameInitMessage(p2.getPieceType()), p2.getUser());
+    tcpServer_.sendMessage(Message::gameInitMessage(p1.getPieceType()), p1.getUser());
+    tcpServer_.sendMessage(Message::gameInitMessage(p2.getPieceType()), p2.getUser());
 }
 
 void GameController::onGameStateUpdated(Player p1 , Player p2, BoardModel board)
 {
     Message msg = Message::gameUpdateMessage(board.simpleBoard());
-    tcpServer.sendMessage(msg, p1.getUser());
-    tcpServer.sendMessage(msg, p2.getUser());
+    tcpServer_.sendMessage(msg, p1.getUser());
+    tcpServer_.sendMessage(msg, p2.getUser());
 }
 
 void GameController::onGameEnded(Player winningPlayer)
 {
     qDebug() << "GAME ENDED: " << winningPlayer.getPieceType();
 
+    Game *game = static_cast<Game*>(sender());
     Message msg = Message::gameEndMessage(winningPlayer.getPieceType());
-    Player p1 = game.getPlayerX();
-    Player p2 = game.getPlayerO();
+    Player p1 = game->getPlayerX();
+    Player p2 = game->getPlayerO();
 
-    tcpServer.sendMessage(msg, p1.getUser());
-    tcpServer.sendMessage(msg, p2.getUser());
+    tcpServer_.sendMessage(msg, p1.getUser());
+    tcpServer_.sendMessage(msg, p2.getUser());
 
-    players.removeOne(p1);
-    players.removeOne(p2);
+    players_.removeOne(p1);
+    players_.removeOne(p2);
+
+    games_.removeOne(game);
+    game->deleteLater();
 }
 
 void GameController::onUserDisconnected(int user)
 {
     Player player = getPlayerByUser(user);
-    players.removeOne(player);
+    players_.removeOne(player);
 
-    if (game.getActive())
+    Game *game = gameWithUser(user);
+
+    if (game)
     {
-        if (game.getPlayerX() == player || game.getPlayerO() == player)
+        if (game->getActive())
         {
-            // qDebug() << "Piece type quit: " << player.getPieceType();
-            game.quit(player.getPieceType());
+            if (game->getPlayerX() == player || game->getPlayerO() == player)
+            {
+                // qDebug() << "Piece type quit: " << player.getPieceType();
+                game->quit(player.getPieceType());
+            }
         }
     }
+    else
+    {
+        qDebug() << "Game already removed";
+    }
+}
+
+Game *GameController::gameWithUser(int user)
+{
+    foreach (Game *game, games_)
+    {
+        if (game->getPlayerO().getUser() == user)
+        {
+            return game;
+        }
+        else if (game->getPlayerX().getUser() == user)
+        {
+            return game;
+        }
+    }
+
+    return nullptr;
 }
 
 int GameController::indexOfFirstPlayerNotInGame()
 {
-    for (int i = 0; i < players.length(); i++)
+    for (int i = 0; i < players_.length(); i++)
     {
-        if (players[i].getPieceType() == PIECE_TYPE_NONE)
+        if (players_[i].getPieceType() == PIECE_TYPE_NONE)
         {
             return i;
         }
@@ -84,7 +110,7 @@ int GameController::indexOfFirstPlayerNotInGame()
 
 Player GameController::getPlayerByUser(int user)
 {
-    foreach (Player p, players)
+    foreach (Player p, players_)
     {
         if (p.getUser() == user)
         {
@@ -103,31 +129,56 @@ void GameController::handleMessage(Message msg, int user)
 
         if (index != -1)
         {
-            players[index] = Player(players[index].getUser(), PIECE_TYPE_X);
+            players_[index] = Player(players_[index].getUser(), PIECE_TYPE_X);
             Player newPlayer(user, PIECE_TYPE_O);
-            players.append(newPlayer);
+            players_.append(newPlayer);
 
-            game.start(players[index], newPlayer);
+            Game *game = new Game();
+            connect(game, SIGNAL(gameInit(Player,Player)), SLOT(onGameInit(Player,Player)));
+            connect(game, SIGNAL(gameStateUpdated(Player, Player, BoardModel)), SLOT(onGameStateUpdated(Player, Player, BoardModel)));
+            connect(game, SIGNAL(gameEnded(Player)), SLOT(onGameEnded(Player)));
+            games_.append(game);
+
+            game->start(players_[index], newPlayer);
         }
         else
         {
             Player newPlayer(user, PIECE_TYPE_NONE);
-            players.append(newPlayer);
+            players_.append(newPlayer);
         }
     }
     else if (msg.getFunction() == FUNCTION_GAME_QUIT)
     {
         Player quitting = getPlayerByUser(user);
-        game.quit(quitting.getPieceType());
+
+        Game *game = gameWithUser(user);
+
+        if (game)
+        {
+            game->quit(quitting.getPieceType());
+        }
+        else
+        {
+            qDebug() << "Couldn't find game of quitting user";
+        }
     }
     else if (msg.getFunction() == FUNCTION_GAME_PLACE)
     {
         Player actingPlayer =  getPlayerByUser(user);
 
-        if (game.getActive() && actingPlayer.getPieceType() == game.currentTurnPiece())
+        Game *game = gameWithUser(user);
+
+        if (game)
         {
-            game.placePiece(msg.getCell());
-            game.checkForGameOver();
+            if (game->getActive() && actingPlayer.getPieceType() == game->currentTurnPiece())
+            {
+                game->placePiece(msg.getCell());
+                game->checkForGameOver();
+            }
+        }
+        else
+        {
+            qDebug() << "Couldn't find game belonging to user (placing piece): " << user;
         }
     }
 }

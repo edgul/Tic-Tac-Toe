@@ -22,11 +22,12 @@ private slots:
     void onUserDisconnected(int user);
 
 private:
-    TcpServer tcpServer;
-    Game game;
-    QString messageStream;
-    QList<Player> players;
+    TcpServer tcpServer_;
+    QList<Game*> games_;
+    QMap<int, QString> messageStreams_;
+    QList<Player> players_;
 
+    Game* gameWithUser(int user);
     int indexOfFirstPlayerNotInGame();
     Player getPlayerByUser(int user);
     void handleMessage(Message msg, int user);
